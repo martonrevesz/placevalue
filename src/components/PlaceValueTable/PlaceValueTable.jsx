@@ -1,7 +1,10 @@
 import './PlaceValueTable.css'
 
 const CLASS_NAMES = ['Egyesek', 'Ezresek', 'Milliók']
-const PLACE_ABBR = ['E', 'T', 'Sz']
+// Textbook convention: lowercase within the ones class, uppercase from
+// the thousands class up.
+const LOWER_ABBR = ['e', 't', 'sz']
+const UPPER_ABBR = ['E', 'T', 'Sz']
 
 // place 1 = egyes, 2 = tízes, 3 = százas, 4 = ezres, 5 = tízezres, ...
 function describePlace(place, cellIndex) {
@@ -12,7 +15,7 @@ function describePlace(place, cellIndex) {
     cellIndex,
     classIndex,
     className: CLASS_NAMES[classIndex],
-    abbr: PLACE_ABBR[subIndex],
+    abbr: (classIndex === 0 ? LOWER_ABBR : UPPER_ABBR)[subIndex],
   }
 }
 
