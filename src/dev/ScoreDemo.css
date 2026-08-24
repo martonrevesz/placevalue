@@ -1,0 +1,51 @@
+.score-demo {
+  padding: var(--space-5) var(--space-4) var(--space-8);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.score-demo header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.score-demo header a {
+  color: var(--color-primary);
+}
+
+.score-demo section {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-4);
+}
+
+.score-demo-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.score-demo-actions button {
+  min-height: var(--touch-target-min);
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--text-base);
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  color: var(--color-surface);
+}
+
+.score-demo-btn-correct {
+  background: var(--color-success);
+}
+
+.score-demo-btn-wrong {
+  background: var(--color-error);
+}
+
+.score-demo-btn-reset {
+  background: var(--color-ink-muted);
+}
