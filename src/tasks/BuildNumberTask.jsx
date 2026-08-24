@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { generateNumber } from '../utils/numberGenerator'
 import { checkAnswer } from '../utils/checkAnswer'
+import { formatWithSpaces } from '../utils/formatNumber'
 import { useDigitEntry } from '../hooks/useDigitEntry'
 import { useScore } from '../hooks/useScore'
 import PlaceValueTable from '../components/PlaceValueTable/PlaceValueTable'
@@ -12,10 +13,6 @@ import './BuildNumberTask.css'
 const MIN_DIGITS = 2
 const MAX_DIGITS = 9
 const DEFAULT_DIGITS = 6
-
-function formatWithSpaces(number) {
-  return String(number).replace(/\B(?=(\d{3})+(?!\d))/g, ' ')
-}
 
 function isComplete(values) {
   return values.every((v) => v !== null && v !== undefined && v !== '')

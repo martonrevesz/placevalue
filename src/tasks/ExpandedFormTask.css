@@ -1,0 +1,114 @@
+.expanded-form-task {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-5);
+  padding: var(--space-5) var(--space-4) var(--space-8);
+}
+
+.expanded-form-header {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.expanded-form-header > div {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.expanded-form-header a {
+  color: var(--color-primary);
+  font-size: var(--text-sm);
+}
+
+.expanded-form-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-5);
+}
+
+.expanded-form-slider {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.expanded-form-slider input[type='range'] {
+  width: 200px;
+}
+
+.expanded-form-checkbox {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.expanded-form-prompt {
+  font-size: var(--text-lg);
+  color: var(--color-ink);
+}
+
+.expanded-form-expression {
+  font-size: var(--text-xl);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-primary);
+}
+
+.expanded-form-input-row {
+  width: 100%;
+  max-width: 480px;
+}
+
+.expanded-form-input {
+  width: 100%;
+  min-height: var(--touch-target-min);
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--text-lg);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.expanded-form-input:disabled {
+  opacity: 0.7;
+}
+
+.expanded-form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.expanded-form-actions button {
+  min-height: var(--touch-target-min);
+  padding: var(--space-3) var(--space-5);
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: var(--color-surface);
+  background: var(--color-primary);
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+}
+
+.expanded-form-actions button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.expanded-form-reset-score {
+  font-size: var(--text-sm);
+  color: var(--color-ink-muted);
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+}
