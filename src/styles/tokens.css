@@ -1,0 +1,64 @@
+/*
+  Design tokens for the place value practice app.
+  Light theme only, on purpose: classroom devices (tablets, projectors)
+  benefit from one predictable look rather than adapting to system
+  dark-mode, and the warm paper background echoes the printed textbook.
+*/
+:root {
+  /* Base colors */
+  --color-bg: #f7f3ea;
+  --color-surface: #ffffff;
+  --color-ink: #2b2620;
+  --color-ink-muted: #6b6255;
+  --color-border: #ddd4c2;
+
+  /* Primary (structure: headers, class grouping, primary actions) */
+  --color-primary: #2f5d77;
+  --color-primary-bg: rgba(47, 93, 119, 0.08);
+  --color-primary-border: rgba(47, 93, 119, 0.35);
+
+  /* Feedback colors — always paired with an icon, never color-only */
+  --color-success: #2f9e58;
+  --color-success-bg: rgba(47, 158, 88, 0.12);
+  --color-error: #c94f3d;
+  --color-error-bg: rgba(201, 79, 61, 0.12);
+
+  /* Typography */
+  --font-sans: system-ui, 'Segoe UI', Roboto, Arial, sans-serif;
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.25rem;
+  --text-xl: 1.75rem;
+  --text-2xl: 2.25rem;
+  --text-digit: 2.5rem;
+
+  /* Spacing (4px base unit) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+
+  /* Shape */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+
+  /* Touch targets — 48px is the WCAG/Android minimum; table cells sized
+     up further so digit tiles are easy to drag on a tablet. */
+  --touch-target-min: 48px;
+  --table-cell-size: 56px;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --text-xl: 2rem;
+    --text-2xl: 2.75rem;
+    --text-digit: 3rem;
+    --table-cell-size: 64px;
+  }
+}

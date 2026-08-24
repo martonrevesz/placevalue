@@ -1,3 +1,4 @@
+import StyleGuide from './dev/StyleGuide'
 import './App.css'
 
 const TASKS = [
@@ -10,6 +11,12 @@ const TASKS = [
 ]
 
 function App() {
+  const view = new URLSearchParams(window.location.search).get('view')
+
+  if (view === 'styleguide') {
+    return <StyleGuide />
+  }
+
   return (
     <div className="app-shell">
       <header>
@@ -29,6 +36,10 @@ function App() {
       <main className="content-placeholder">
         <p>Itt jelenik majd meg a kiválasztott feladat.</p>
       </main>
+
+      <footer className="dev-footer">
+        <a href="?view=styleguide">Stílus referencia (fejlesztői)</a>
+      </footer>
     </div>
   )
 }
