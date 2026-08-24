@@ -1,5 +1,6 @@
 import StyleGuide from './dev/StyleGuide'
 import PlaceValueTableDemo from './dev/PlaceValueTableDemo'
+import NumberGeneratorDemo from './dev/NumberGeneratorDemo'
 import './App.css'
 
 const TASKS = [
@@ -20,6 +21,10 @@ function App() {
 
   if (view === 'table-demo') {
     return <PlaceValueTableDemo />
+  }
+
+  if (view === 'generator-demo') {
+    return <NumberGeneratorDemo />
   }
 
   return (
@@ -46,6 +51,8 @@ function App() {
         <a href="?view=styleguide">Stílus referencia (fejlesztői)</a>
         {' · '}
         <a href="?view=table-demo">Táblázat demó (fejlesztői)</a>
+        {' · '}
+        <a href="?view=generator-demo">Számgenerátor demó (fejlesztői)</a>
       </footer>
     </div>
   )
