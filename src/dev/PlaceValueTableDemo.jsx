@@ -1,6 +1,6 @@
-import { useState } from 'react'
 import PlaceValueTable from '../components/PlaceValueTable/PlaceValueTable'
 import DigitPad from '../components/DigitPad/DigitPad'
+import { useDigitEntry } from '../hooks/useDigitEntry'
 import './PlaceValueTableDemo.css'
 
 function digitsOf(number) {
@@ -12,24 +12,7 @@ function digitAt(number, place) {
 }
 
 function InteractiveDemo({ places }) {
-  const [values, setValues] = useState(Array(places.length).fill(null))
-  const [activeIndex, setActiveIndex] = useState(0)
-
-  const handleDigit = (digit) => {
-    const next = [...values]
-    next[activeIndex] = digit
-    setValues(next)
-    if (activeIndex < places.length - 1) {
-      setActiveIndex(activeIndex + 1)
-    }
-  }
-
-  const handleClear = () => {
-    const next = [...values]
-    next[activeIndex] = null
-    setValues(next)
-  }
-
+  const { values, activeIndex, enterDigit, clearActive, setActiveIndex, reset } = useDigitEntry(places.length)
   const readout = values.map((v) => v ?? '_').join(' ')
 
   return (
@@ -41,7 +24,7 @@ function InteractiveDemo({ places }) {
         activeIndex={activeIndex}
         onCellClick={setActiveIndex}
       />
-      <DigitPad onDigit={handleDigit} onClear={handleClear} />
+      <DigitPad onDigit={enterDigit} onClear={clearActive} onClearAll={reset} />
       <p className="table-demo-readout">
         Beírt számjegyek: <code>{readout}</code>
       </p>

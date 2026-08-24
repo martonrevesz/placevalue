@@ -1,6 +1,7 @@
 import StyleGuide from './dev/StyleGuide'
 import PlaceValueTableDemo from './dev/PlaceValueTableDemo'
 import NumberGeneratorDemo from './dev/NumberGeneratorDemo'
+import AnswerCheckDemo from './dev/AnswerCheckDemo'
 import './App.css'
 
 const TASKS = [
@@ -25,6 +26,10 @@ function App() {
 
   if (view === 'generator-demo') {
     return <NumberGeneratorDemo />
+  }
+
+  if (view === 'answer-demo') {
+    return <AnswerCheckDemo />
   }
 
   return (
@@ -53,6 +58,8 @@ function App() {
         <a href="?view=table-demo">Táblázat demó (fejlesztői)</a>
         {' · '}
         <a href="?view=generator-demo">Számgenerátor demó (fejlesztői)</a>
+        {' · '}
+        <a href="?view=answer-demo">Válaszellenőrző demó (fejlesztői)</a>
       </footer>
     </div>
   )
