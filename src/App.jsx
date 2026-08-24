@@ -1,4 +1,5 @@
 import StyleGuide from './dev/StyleGuide'
+import PlaceValueTableDemo from './dev/PlaceValueTableDemo'
 import './App.css'
 
 const TASKS = [
@@ -15,6 +16,10 @@ function App() {
 
   if (view === 'styleguide') {
     return <StyleGuide />
+  }
+
+  if (view === 'table-demo') {
+    return <PlaceValueTableDemo />
   }
 
   return (
@@ -39,6 +44,8 @@ function App() {
 
       <footer className="dev-footer">
         <a href="?view=styleguide">Stílus referencia (fejlesztői)</a>
+        {' · '}
+        <a href="?view=table-demo">Táblázat demó (fejlesztői)</a>
       </footer>
     </div>
   )

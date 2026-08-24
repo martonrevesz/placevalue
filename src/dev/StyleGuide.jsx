@@ -1,4 +1,5 @@
 import { CheckIcon, CrossIcon } from '../components/icons/FeedbackIcons'
+import PlaceValueTable from '../components/PlaceValueTable/PlaceValueTable'
 import './StyleGuide.css'
 
 const COLORS = [
@@ -11,37 +12,6 @@ const COLORS = [
 ]
 
 const SPACES = ['space-1', 'space-2', 'space-3', 'space-4', 'space-5', 'space-6', 'space-7', 'space-8']
-
-// Static mockup only, for visual review. The real reusable, interactive
-// version is built in Task 1.1 (PlaceValueTable component).
-function SampleTable({ mode }) {
-  const classes = [
-    { name: 'Milliós osztály', digits: mode === 'display' ? ['1', '2', '3'] : ['', '', ''] },
-    { name: 'Ezres osztály', digits: mode === 'display' ? ['4', '5', '6'] : ['', '', ''] },
-    { name: 'Egyes osztály', digits: mode === 'display' ? ['7', '8', '9'] : ['', '', ''] },
-  ]
-  const placeLabels = ['Sz', 'T', 'E']
-
-  return (
-    <div className="sample-table" data-mode={mode}>
-      {classes.map((cls) => (
-        <div className="sample-table-class" key={cls.name}>
-          <div className="sample-table-class-name">{cls.name}</div>
-          <div className="sample-table-cells">
-            {cls.digits.map((digit, i) => (
-              <div className="sample-table-cell-wrap" key={placeLabels[i]}>
-                <div className={`sample-table-cell ${mode === 'interactive' ? 'is-empty' : ''}`}>
-                  {digit}
-                </div>
-                <div className="sample-table-place-label">{placeLabels[i]}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      ))}
-    </div>
-  )
-}
 
 function StyleGuide() {
   return (
@@ -115,13 +85,14 @@ function StyleGuide() {
       <section>
         <h2>Helyiérték táblázat — minta</h2>
         <p className="section-note">
-          Statikus makett a tankönyvi elrendezés ellenőrzésére. A valódi,
-          újrafelhasználható komponenst az 1.1-es feladat építi meg.
+          A megosztott <code>PlaceValueTable</code> komponens (1.1-es feladat)
+          a tankönyvi elrendezést követi: osztályokra bontva, egy sorban
+          összefűzve, elválasztó sávval.
         </p>
         <h3>Megjelenítő mód (kitöltött)</h3>
-        <SampleTable mode="display" />
+        <PlaceValueTable mode="display" digitCount={9} values={['1', '2', '3', '4', '5', '6', '7', '8', '9']} />
         <h3>Interaktív mód (üres, nagy érintőfelület)</h3>
-        <SampleTable mode="interactive" />
+        <PlaceValueTable mode="interactive" digitCount={9} values={[]} />
       </section>
     </div>
   )
