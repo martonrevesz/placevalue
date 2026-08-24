@@ -85,3 +85,25 @@
   font-size: var(--text-xs);
   color: var(--color-ink-muted);
 }
+
+.pv-cell:disabled {
+  cursor: not-allowed;
+}
+
+.pv-table[data-feedback='success'] {
+  border-color: var(--color-success);
+}
+
+.pv-table[data-feedback='success'] .pv-cell {
+  border-color: var(--color-success);
+  background: var(--color-success-bg);
+}
+
+.pv-table[data-feedback='error'] {
+  border-color: var(--color-error);
+}
+
+.pv-table[data-feedback='error'] .pv-cell {
+  border-color: var(--color-error);
+  background: var(--color-error-bg);
+}

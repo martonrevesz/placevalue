@@ -3,15 +3,16 @@ import PlaceValueTableDemo from './dev/PlaceValueTableDemo'
 import NumberGeneratorDemo from './dev/NumberGeneratorDemo'
 import AnswerCheckDemo from './dev/AnswerCheckDemo'
 import ScoreDemo from './dev/ScoreDemo'
+import BuildNumberTask from './tasks/BuildNumberTask'
 import './App.css'
 
 const TASKS = [
-  'Építsd meg a számot',
-  'Olvasd le a táblázatot',
-  'Bontott alak',
-  'Számok összehasonlítása',
-  'Számok sorba rendezése',
-  'Helyi érték, alaki érték, valódi érték',
+  { label: 'Építsd meg a számot', view: 'build-number' },
+  { label: 'Olvasd le a táblázatot', view: null },
+  { label: 'Bontott alak', view: null },
+  { label: 'Számok összehasonlítása', view: null },
+  { label: 'Számok sorba rendezése', view: null },
+  { label: 'Helyi érték, alaki érték, valódi érték', view: null },
 ]
 
 function App() {
@@ -37,6 +38,10 @@ function App() {
     return <ScoreDemo />
   }
 
+  if (view === 'build-number') {
+    return <BuildNumberTask />
+  }
+
   return (
     <div className="app-shell">
       <header>
@@ -45,9 +50,15 @@ function App() {
 
       <nav aria-label="Feladatok">
         <ul className="task-nav">
-          {TASKS.map((label) => (
-            <li key={label}>
-              <span className="task-nav-item">{label}</span>
+          {TASKS.map((task) => (
+            <li key={task.label}>
+              {task.view ? (
+                <a className="task-nav-item" href={`?view=${task.view}`}>
+                  {task.label}
+                </a>
+              ) : (
+                <span className="task-nav-item">{task.label}</span>
+              )}
             </li>
           ))}
         </ul>

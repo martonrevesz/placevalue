@@ -28,6 +28,18 @@
   background: var(--color-surface);
   color: var(--color-ink);
   font-size: var(--text-base);
+  text-decoration: none;
+}
+
+a.task-nav-item {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+a.task-nav-item:hover {
+  background: var(--color-primary-bg);
 }
 
 .content-placeholder {

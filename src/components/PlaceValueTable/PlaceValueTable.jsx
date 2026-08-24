@@ -59,6 +59,11 @@ function groupByClass(columns) {
  * automatically.
  *
  * `values[i]` corresponds to `places[i]`.
+ *
+ * `feedback` ('success' | 'error' | null) tints the whole table after a
+ * check — always alongside a separate icon+text message elsewhere on
+ * the screen, never as the only signal. `disabled` locks the cells
+ * (e.g. between checking an answer and moving to the next one).
  */
 function PlaceValueTable({
   places,
@@ -66,6 +71,8 @@ function PlaceValueTable({
   mode = 'display',
   values = [],
   activeIndex = null,
+  feedback = null,
+  disabled = false,
   onCellClick,
   onDigitKey,
   onBackspaceKey,
@@ -75,10 +82,10 @@ function PlaceValueTable({
   const cellRefs = useRef([])
 
   useEffect(() => {
-    if (mode === 'interactive' && activeIndex !== null) {
+    if (mode === 'interactive' && !disabled && activeIndex !== null) {
       cellRefs.current[activeIndex]?.focus()
     }
-  }, [mode, activeIndex])
+  }, [mode, activeIndex, disabled])
 
   const handleKeyDown = (cellIndex) => (e) => {
     if (/^[0-9]$/.test(e.key)) {
@@ -91,7 +98,7 @@ function PlaceValueTable({
   }
 
   return (
-    <div className="pv-table" data-mode={mode}>
+    <div className="pv-table" data-mode={mode} data-feedback={feedback}>
       {groups.map((group, groupIndex) => (
         <div className="pv-class" key={`${group.classIndex}-${groupIndex}`}>
           <div className="pv-class-name">{group.className}</div>
@@ -118,6 +125,7 @@ function PlaceValueTable({
                       }}
                       type="button"
                       className={cellClassName}
+                      disabled={disabled}
                       onClick={() => onCellClick?.(cellIndex)}
                       onKeyDown={handleKeyDown(cellIndex)}
                       aria-label={`${col.className}, ${col.abbr} hely${hasDigit ? `, ${digit}` : ', üres'}`}

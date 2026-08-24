@@ -1,0 +1,114 @@
+.build-number-task {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-5);
+  padding: var(--space-5) var(--space-4) var(--space-8);
+}
+
+.build-number-header {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.build-number-header > div {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.build-number-header a {
+  color: var(--color-primary);
+  font-size: var(--text-sm);
+}
+
+.build-number-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-5);
+}
+
+.build-number-slider {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.build-number-slider input[type='range'] {
+  width: 200px;
+}
+
+.build-number-checkbox {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.build-number-prompt {
+  font-size: var(--text-lg);
+  color: var(--color-ink);
+}
+
+.build-number-prompt strong {
+  font-variant-numeric: tabular-nums;
+  color: var(--color-primary);
+}
+
+.build-number-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.build-number-actions button {
+  min-height: var(--touch-target-min);
+  padding: var(--space-3) var(--space-5);
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: var(--color-surface);
+  background: var(--color-primary);
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+}
+
+.build-number-actions button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.feedback-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-lg);
+  font-size: var(--text-base);
+  font-weight: 600;
+}
+
+.feedback-success {
+  background: var(--color-success-bg);
+  color: var(--color-success);
+}
+
+.feedback-error {
+  background: var(--color-error-bg);
+  color: var(--color-error);
+}
+
+.build-number-reset-score {
+  font-size: var(--text-sm);
+  color: var(--color-ink-muted);
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+}
