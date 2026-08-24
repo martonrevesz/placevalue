@@ -4,11 +4,13 @@ import NumberGeneratorDemo from './dev/NumberGeneratorDemo'
 import AnswerCheckDemo from './dev/AnswerCheckDemo'
 import ScoreDemo from './dev/ScoreDemo'
 import BuildNumberTask from './tasks/BuildNumberTask'
+import ReadTableTask from './tasks/ReadTableTask'
+import HungarianWordsDemo from './dev/HungarianWordsDemo'
 import './App.css'
 
 const TASKS = [
   { label: 'Építsd meg a számot', view: 'build-number' },
-  { label: 'Olvasd le a táblázatot', view: null },
+  { label: 'Olvasd le a táblázatot', view: 'read-table' },
   { label: 'Bontott alak', view: null },
   { label: 'Számok összehasonlítása', view: null },
   { label: 'Számok sorba rendezése', view: null },
@@ -40,6 +42,14 @@ function App() {
 
   if (view === 'build-number') {
     return <BuildNumberTask />
+  }
+
+  if (view === 'read-table') {
+    return <ReadTableTask />
+  }
+
+  if (view === 'words-demo') {
+    return <HungarianWordsDemo />
   }
 
   return (
@@ -78,6 +88,8 @@ function App() {
         <a href="?view=answer-demo">Válaszellenőrző demó (fejlesztői)</a>
         {' · '}
         <a href="?view=score-demo">Pontszám demó (fejlesztői)</a>
+        {' · '}
+        <a href="?view=words-demo">Számnevek demó (fejlesztői)</a>
       </footer>
     </div>
   )

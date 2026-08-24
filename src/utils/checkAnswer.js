@@ -1,6 +1,6 @@
-// TODO(Task 2.1): Hungarian written-number normalization/checking
-// (e.g. "száz" vs "egyszáz") is a separate, more specific utility —
-// not handled here.
+// Hungarian written-number normalization/checking (e.g. "száz" vs
+// "egyszáz") lives in ./hungarianNumberWords.js — a separate utility,
+// since it compares normalized strings rather than numbers.
 
 /**
  * Normalizes a numeric-ish value into a canonical number for

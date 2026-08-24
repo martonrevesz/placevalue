@@ -1,0 +1,116 @@
+.words-demo {
+  padding: var(--space-5) var(--space-4) var(--space-8);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.words-demo header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.words-demo header a {
+  color: var(--color-primary);
+}
+
+.section-note {
+  margin-bottom: var(--space-4);
+  max-width: 65ch;
+}
+
+.words-explorer {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-3);
+}
+
+.words-explorer input[type='number'] {
+  font-size: var(--text-base);
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  width: 160px;
+}
+
+.words-explorer-output {
+  font-size: var(--text-lg);
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+.test-case-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.test-case-list li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.test-case-detail {
+  font-size: var(--text-sm);
+  color: var(--color-ink-muted);
+}
+
+.feedback-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-lg);
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
+.feedback-success {
+  background: var(--color-success-bg);
+  color: var(--color-success);
+}
+
+.feedback-error {
+  background: var(--color-error-bg);
+  color: var(--color-error);
+}
+
+.words-try-it {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-3);
+}
+
+.words-try-it-input {
+  font-size: var(--text-base);
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  width: 100%;
+  max-width: 400px;
+}
+
+.words-try-it-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.words-try-it-actions button {
+  min-height: var(--touch-target-min);
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--text-base);
+  color: var(--color-surface);
+  background: var(--color-primary);
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+}
