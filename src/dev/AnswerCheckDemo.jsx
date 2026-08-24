@@ -28,7 +28,8 @@ function FeedbackPill({ ok }) {
 function TryItYourself() {
   const [target] = useState(() => generateNumber(6, true))
   const digitCount = String(target).length
-  const { values, activeIndex, enterDigit, clearActive, setActiveIndex, reset } = useDigitEntry(digitCount)
+  const { values, activeIndex, enterDigit, enterDigitAt, clearActive, backspaceAt, setActiveIndex, reset } =
+    useDigitEntry(digitCount)
   const [result, setResult] = useState(null)
 
   const handleDigit = (digit) => {
@@ -36,8 +37,18 @@ function TryItYourself() {
     setResult(null)
   }
 
+  const handleDigitKey = (index, digit) => {
+    enterDigitAt(index, digit)
+    setResult(null)
+  }
+
   const handleClear = () => {
     clearActive()
+    setResult(null)
+  }
+
+  const handleBackspaceKey = (index) => {
+    backspaceAt(index)
     setResult(null)
   }
 
@@ -61,6 +72,8 @@ function TryItYourself() {
         values={values}
         activeIndex={activeIndex}
         onCellClick={setActiveIndex}
+        onDigitKey={handleDigitKey}
+        onBackspaceKey={handleBackspaceKey}
       />
       <DigitPad onDigit={handleDigit} onClear={handleClear} onClearAll={handleClearAll} />
       <div className="answer-demo-actions">
@@ -108,7 +121,7 @@ function AnswerCheckDemo() {
       <section>
         <h2>Próbáld ki</h2>
         <p className="section-note">
-          Írd be a fenti cél számot a táblázatba, majd ellenőrizd.
+          Írd be a fenti cél számot (akár egyszerűen begépelve), majd ellenőrizd.
         </p>
         <TryItYourself />
       </section>

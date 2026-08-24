@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react'
 import './PlaceValueTable.css'
 
 const CLASS_NAMES = ['Egyesek', 'Ezresek', 'Milliók']
@@ -43,8 +44,12 @@ function groupByClass(columns) {
  * matching the textbook layout.
  *
  * - `mode="display"`: read-only, shows `values` as plain digits.
- * - `mode="interactive"`: cells are clickable buttons; clicking a cell
- *   calls `onCellClick(index)` so a parent can drive a digit pad.
+ * - `mode="interactive"`: cells are clickable buttons. Clicking a cell
+ *   calls `onCellClick(index)` so a parent can drive a digit pad (for
+ *   touch devices). The first cell also auto-focuses and each cell
+ *   accepts keyboard digit typing directly — `onDigitKey(index, digit)`
+ *   and `onBackspaceKey(index)` — with focus auto-advancing to the next
+ *   cell, so a desktop user can just type the number.
  *
  * Which columns render is controlled by `places`, an array of place
  * numbers (1 = egyes, 2 = tízes, 3 = százas, 4 = ezres, ...), left to
@@ -55,9 +60,35 @@ function groupByClass(columns) {
  *
  * `values[i]` corresponds to `places[i]`.
  */
-function PlaceValueTable({ places, digitCount, mode = 'display', values = [], activeIndex = null, onCellClick }) {
+function PlaceValueTable({
+  places,
+  digitCount,
+  mode = 'display',
+  values = [],
+  activeIndex = null,
+  onCellClick,
+  onDigitKey,
+  onBackspaceKey,
+}) {
   const resolvedPlaces = places ?? contiguousPlaces(digitCount ?? 0)
   const groups = groupByClass(resolvedPlaces.map(describePlace))
+  const cellRefs = useRef([])
+
+  useEffect(() => {
+    if (mode === 'interactive' && activeIndex !== null) {
+      cellRefs.current[activeIndex]?.focus()
+    }
+  }, [mode, activeIndex])
+
+  const handleKeyDown = (cellIndex) => (e) => {
+    if (/^[0-9]$/.test(e.key)) {
+      e.preventDefault()
+      onDigitKey?.(cellIndex, e.key)
+    } else if (e.key === 'Backspace' || e.key === 'Delete') {
+      e.preventDefault()
+      onBackspaceKey?.(cellIndex)
+    }
+  }
 
   return (
     <div className="pv-table" data-mode={mode}>
@@ -82,9 +113,13 @@ function PlaceValueTable({ places, digitCount, mode = 'display', values = [], ac
                 <div className="pv-cell-wrap" key={col.place}>
                   {mode === 'interactive' ? (
                     <button
+                      ref={(el) => {
+                        cellRefs.current[cellIndex] = el
+                      }}
                       type="button"
                       className={cellClassName}
                       onClick={() => onCellClick?.(cellIndex)}
+                      onKeyDown={handleKeyDown(cellIndex)}
                       aria-label={`${col.className}, ${col.abbr} hely${hasDigit ? `, ${digit}` : ', üres'}`}
                       aria-pressed={isActive}
                     >

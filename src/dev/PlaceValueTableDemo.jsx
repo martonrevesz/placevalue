@@ -12,7 +12,8 @@ function digitAt(number, place) {
 }
 
 function InteractiveDemo({ places }) {
-  const { values, activeIndex, enterDigit, clearActive, setActiveIndex, reset } = useDigitEntry(places.length)
+  const { values, activeIndex, enterDigit, enterDigitAt, clearActive, backspaceAt, setActiveIndex, reset } =
+    useDigitEntry(places.length)
   const readout = values.map((v) => v ?? '_').join(' ')
 
   return (
@@ -23,6 +24,8 @@ function InteractiveDemo({ places }) {
         values={values}
         activeIndex={activeIndex}
         onCellClick={setActiveIndex}
+        onDigitKey={enterDigitAt}
+        onBackspaceKey={backspaceAt}
       />
       <DigitPad onDigit={enterDigit} onClear={clearActive} onClearAll={reset} />
       <p className="table-demo-readout">
@@ -73,9 +76,10 @@ function PlaceValueTableDemo() {
       <section>
         <h2>Interaktív mód (interactive)</h2>
         <p className="section-note">
-          Kattints egy mezőre a kijelöléséhez, majd egy számjegyre a
-          számbillentyűzeten. A kijelölés automatikusan a következő üres
-          mezőre lép.
+          Kattints egy mezőre és válassz egy számjegyet a billentyűzeten,
+          vagy asztali gépen egyszerűen gépeld be a számot — az első mező
+          eleve ki van jelölve, és gépelés közben automatikusan a
+          következő mezőre ugrik a fókusz.
         </p>
         <InteractiveDemo places={[7, 6, 5, 4, 3, 2, 1]} />
       </section>
