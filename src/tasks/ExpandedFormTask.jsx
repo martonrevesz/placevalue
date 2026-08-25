@@ -10,7 +10,7 @@ import { CheckIcon, CrossIcon } from '../components/icons/FeedbackIcons'
 import './ExpandedFormTask.css'
 
 const MIN_DIGITS = 2
-const MAX_DIGITS = 6
+const MAX_DIGITS = 9
 const DEFAULT_DIGITS = 4
 const DIRECTIONS = ['toExpanded', 'toNumber']
 

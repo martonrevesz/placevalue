@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { generateNumber } from '../utils/numberGenerator'
 import { decidingPlace } from '../utils/compareNumbers'
+import { formatWithSpaces } from '../utils/formatNumber'
 import { useScore } from '../hooks/useScore'
 import PlaceValueTable from '../components/PlaceValueTable/PlaceValueTable'
 import ScoreDisplay from '../components/ScoreDisplay/ScoreDisplay'
@@ -8,7 +9,7 @@ import { CheckIcon, CrossIcon } from '../components/icons/FeedbackIcons'
 import './ComparisonTask.css'
 
 const MIN_DIGITS = 2
-const MAX_DIGITS = 6
+const MAX_DIGITS = 9
 const DEFAULT_DIGITS = 4
 
 // Chance of generating two numbers with independently random (and thus
@@ -152,7 +153,7 @@ function ComparisonTask() {
         </label>
       </section>
 
-      <p className="comparison-prompt">Melyik szám a nagyobb? Kattints a táblázatra!</p>
+      <p className="comparison-prompt">Melyik szám a nagyobb? Kattints rá!</p>
 
       <div className="comparison-pair">
         <button
@@ -161,12 +162,16 @@ function ComparisonTask() {
           disabled={isChecked}
           onClick={() => handleSelect('a')}
         >
-          <PlaceValueTable
-            mode="display"
-            digitCount={pair.digitsA}
-            values={digitsOf(pair.a, pair.digitsA)}
-            highlightIndex={highlightA}
-          />
+          {isChecked ? (
+            <PlaceValueTable
+              mode="display"
+              digitCount={pair.digitsA}
+              values={digitsOf(pair.a, pair.digitsA)}
+              highlightIndex={highlightA}
+            />
+          ) : (
+            <span className="comparison-number">{formatWithSpaces(pair.a)}</span>
+          )}
         </button>
 
         <span className="comparison-vs">{isChecked ? (winner === 'a' ? '>' : '<') : '?'}</span>
@@ -177,12 +182,16 @@ function ComparisonTask() {
           disabled={isChecked}
           onClick={() => handleSelect('b')}
         >
-          <PlaceValueTable
-            mode="display"
-            digitCount={pair.digitsB}
-            values={digitsOf(pair.b, pair.digitsB)}
-            highlightIndex={highlightB}
-          />
+          {isChecked ? (
+            <PlaceValueTable
+              mode="display"
+              digitCount={pair.digitsB}
+              values={digitsOf(pair.b, pair.digitsB)}
+              highlightIndex={highlightB}
+            />
+          ) : (
+            <span className="comparison-number">{formatWithSpaces(pair.b)}</span>
+          )}
         </button>
       </div>
 
