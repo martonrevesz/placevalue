@@ -64,6 +64,10 @@ function groupByClass(columns) {
  * check — always alongside a separate icon+text message elsewhere on
  * the screen, never as the only signal. `disabled` locks the cells
  * (e.g. between checking an answer and moving to the next one).
+ *
+ * `highlightIndex` optionally rings a single cell (by the same index
+ * space as `values`) — e.g. calling out the deciding digit after a
+ * comparison — independent of `feedback`'s whole-table tint.
  */
 function PlaceValueTable({
   places,
@@ -72,6 +76,7 @@ function PlaceValueTable({
   values = [],
   activeIndex = null,
   feedback = null,
+  highlightIndex = null,
   disabled = false,
   onCellClick,
   onDigitKey,
@@ -108,10 +113,12 @@ function PlaceValueTable({
               const digit = values[cellIndex]
               const hasDigit = digit !== undefined && digit !== null && digit !== ''
               const isActive = mode === 'interactive' && activeIndex === cellIndex
+              const isHighlight = highlightIndex === cellIndex
               const cellClassName = [
                 'pv-cell',
                 !hasDigit && 'is-empty',
                 isActive && 'is-active',
+                isHighlight && 'is-highlight',
               ]
                 .filter(Boolean)
                 .join(' ')
