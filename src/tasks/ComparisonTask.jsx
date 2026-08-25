@@ -11,11 +11,28 @@ const MIN_DIGITS = 2
 const MAX_DIGITS = 6
 const DEFAULT_DIGITS = 4
 
+// Chance of generating two numbers with independently random (and thus
+// often different) digit counts, for variety. Otherwise numbers are
+// built to be genuinely tricky to compare — see generatePair below.
+const DIFFERENT_LENGTH_CHANCE = 0.2
+
 function randomDigitCount(max) {
   return MIN_DIGITS + Math.floor(Math.random() * (max - MIN_DIGITS + 1))
 }
 
-function generatePair(maxDigitCount, allowZeros) {
+// A digit different from `current` for the given position: the leading
+// digit (position 0) is never 0 (so the number keeps its digit count),
+// other positions respect `allowZeros`.
+function pickDifferentDigit(current, isLeading, allowZeros) {
+  const min = isLeading || !allowZeros ? 1 : 0
+  let digit
+  do {
+    digit = min + Math.floor(Math.random() * (10 - min))
+  } while (digit === current)
+  return digit
+}
+
+function generateIndependentPair(maxDigitCount, allowZeros) {
   let a, b, digitsA, digitsB
   do {
     digitsA = randomDigitCount(maxDigitCount)
@@ -24,6 +41,31 @@ function generatePair(maxDigitCount, allowZeros) {
     b = generateNumber(digitsB, allowZeros)
   } while (a === b)
   return { a, b, digitsA, digitsB }
+}
+
+// Two numbers with the same digit count that differ in exactly one
+// digit, at a random position — deliberately close, so the student has
+// to actually compare place by place instead of eyeballing magnitude.
+function generateSimilarPair(maxDigitCount, allowZeros) {
+  const digitCount = randomDigitCount(maxDigitCount)
+  const digits = String(generateNumber(digitCount, allowZeros)).split('').map(Number)
+  const index = Math.floor(Math.random() * digitCount)
+
+  const otherDigits = [...digits]
+  otherDigits[index] = pickDifferentDigit(digits[index], index === 0, allowZeros)
+
+  return {
+    a: Number(digits.join('')),
+    b: Number(otherDigits.join('')),
+    digitsA: digitCount,
+    digitsB: digitCount,
+  }
+}
+
+function generatePair(maxDigitCount, allowZeros) {
+  return Math.random() < DIFFERENT_LENGTH_CHANCE
+    ? generateIndependentPair(maxDigitCount, allowZeros)
+    : generateSimilarPair(maxDigitCount, allowZeros)
 }
 
 function digitsOf(number, digitCount) {
