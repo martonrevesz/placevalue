@@ -59,6 +59,12 @@
   color: var(--color-primary);
 }
 
+.build-number-hint {
+  margin-top: calc(-1 * var(--space-3));
+  font-size: var(--text-sm);
+  color: var(--color-ink-muted);
+}
+
 .build-number-actions {
   display: flex;
   flex-wrap: wrap;

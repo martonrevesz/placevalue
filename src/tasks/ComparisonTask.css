@@ -79,6 +79,24 @@
   cursor: pointer;
 }
 
+/* Both the plain-number and table views are always in the DOM, stacked
+   in the same grid cell — the cell sizes to the larger (the table),
+   so switching which one is visible never reflows the surrounding
+   layout. */
+.comparison-card-content {
+  display: grid;
+}
+
+.comparison-card-content > * {
+  grid-area: 1 / 1;
+  align-self: center;
+  justify-self: center;
+}
+
+.comparison-card-content .is-hidden {
+  visibility: hidden;
+}
+
 .comparison-number {
   padding: var(--space-3) var(--space-4);
   font-size: var(--text-digit);

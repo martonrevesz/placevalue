@@ -14,8 +14,24 @@ const MIN_DIGITS = 2
 const MAX_DIGITS = 9
 const DEFAULT_DIGITS = 6
 
-function isComplete(values) {
-  return values.every((v) => v !== null && v !== undefined && v !== '')
+// The table always shows every place up to hundred-millions, regardless
+// of the target's own digit count — otherwise the number of empty
+// cells would just tell the student how many digits to type, turning
+// "build the number" into a typing exercise instead of a place-value
+// one. The student has to work out which columns to leave blank.
+const TABLE_DIGITS = 9
+
+function hasAnyValue(values) {
+  return values.some((v) => v !== null && v !== undefined && v !== '')
+}
+
+// Cells the student left blank count as 0 (a blank higher-order column
+// is exactly the correct answer for a number that doesn't reach that
+// magnitude) — this also naturally still marks a skipped *real* digit
+// as wrong, since substituting 0 there just makes the built number not
+// match the target.
+function valuesToAnswer(values) {
+  return values.map((v) => (v === null || v === undefined || v === '' ? '0' : v))
 }
 
 function BuildNumberTask() {
@@ -25,7 +41,7 @@ function BuildNumberTask() {
   const [result, setResult] = useState(null)
 
   const { values, activeIndex, enterDigit, enterDigitAt, backspaceAt, clearActive, setActiveIndex, reset } =
-    useDigitEntry(digitCount)
+    useDigitEntry(TABLE_DIGITS)
   const { correct, total, recordAttempt, reset: resetScore } = useScore()
 
   const isChecked = result !== null
@@ -72,7 +88,7 @@ function BuildNumberTask() {
   }
 
   const handleCheck = () => {
-    const ok = checkAnswer(values, target)
+    const ok = checkAnswer(valuesToAnswer(values), target)
     setResult(ok)
     recordAttempt(ok)
   }
@@ -115,10 +131,11 @@ function BuildNumberTask() {
       <p className="build-number-prompt">
         Rakd ki a táblázatban ezt a számot: <strong>{formatWithSpaces(target)}</strong>
       </p>
+      <p className="build-number-hint">A nem használt magasabb helyiértékeket hagyd üresen.</p>
 
       <PlaceValueTable
         mode="interactive"
-        digitCount={digitCount}
+        digitCount={TABLE_DIGITS}
         values={values}
         activeIndex={activeIndex}
         feedback={isChecked ? (result ? 'success' : 'error') : null}
@@ -132,7 +149,7 @@ function BuildNumberTask() {
 
       <div className="build-number-actions">
         {!isChecked ? (
-          <button type="button" onClick={handleCheck} disabled={!isComplete(values)}>
+          <button type="button" onClick={handleCheck} disabled={!hasAnyValue(values)}>
             Ellenőrzés
           </button>
         ) : (

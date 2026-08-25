@@ -81,6 +81,28 @@ function cellIndexForPlace(place, digitCount) {
   return digitCount - place
 }
 
+// Renders both the plain-number (pre-answer) and table (post-answer)
+// views stacked in the same grid cell at all times, only toggling
+// visibility. This reserves the final table's footprint from the
+// first render, so revealing it doesn't shift the surrounding layout.
+function ComparisonCardContent({ number, digitCount, highlightIndex, revealed }) {
+  return (
+    <div className="comparison-card-content">
+      <span className={`comparison-number ${revealed ? 'is-hidden' : ''}`}>
+        {formatWithSpaces(number)}
+      </span>
+      <div className={`comparison-table-wrap ${revealed ? '' : 'is-hidden'}`}>
+        <PlaceValueTable
+          mode="display"
+          digitCount={digitCount}
+          values={digitsOf(number, digitCount)}
+          highlightIndex={revealed ? highlightIndex : null}
+        />
+      </div>
+    </div>
+  )
+}
+
 function ComparisonTask() {
   const [digitCount, setDigitCount] = useState(DEFAULT_DIGITS)
   const [allowZeros, setAllowZeros] = useState(true)
@@ -162,16 +184,12 @@ function ComparisonTask() {
           disabled={isChecked}
           onClick={() => handleSelect('a')}
         >
-          {isChecked ? (
-            <PlaceValueTable
-              mode="display"
-              digitCount={pair.digitsA}
-              values={digitsOf(pair.a, pair.digitsA)}
-              highlightIndex={highlightA}
-            />
-          ) : (
-            <span className="comparison-number">{formatWithSpaces(pair.a)}</span>
-          )}
+          <ComparisonCardContent
+            number={pair.a}
+            digitCount={pair.digitsA}
+            highlightIndex={highlightA}
+            revealed={isChecked}
+          />
         </button>
 
         <span className="comparison-vs">{isChecked ? (winner === 'a' ? '>' : '<') : '?'}</span>
@@ -182,16 +200,12 @@ function ComparisonTask() {
           disabled={isChecked}
           onClick={() => handleSelect('b')}
         >
-          {isChecked ? (
-            <PlaceValueTable
-              mode="display"
-              digitCount={pair.digitsB}
-              values={digitsOf(pair.b, pair.digitsB)}
-              highlightIndex={highlightB}
-            />
-          ) : (
-            <span className="comparison-number">{formatWithSpaces(pair.b)}</span>
-          )}
+          <ComparisonCardContent
+            number={pair.b}
+            digitCount={pair.digitsB}
+            highlightIndex={highlightB}
+            revealed={isChecked}
+          />
         </button>
       </div>
 
