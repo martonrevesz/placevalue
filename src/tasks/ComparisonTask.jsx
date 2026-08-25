@@ -13,9 +13,12 @@ const MAX_DIGITS = 9
 const DEFAULT_DIGITS = 4
 
 // Chance of generating two numbers with independently random (and thus
-// often different) digit counts, for variety. Otherwise numbers are
-// built to be genuinely tricky to compare — see generatePair below.
-const DIFFERENT_LENGTH_CHANCE = 0.2
+// often different) digit counts. Otherwise numbers are built to be
+// genuinely tricky to compare — see generatePair below. Comparing
+// numbers with different digit counts (recognizing that a 4-digit
+// number always beats a 3-digit one) is its own distinct skill, so it
+// needs to come up often, not just as an occasional variety case.
+const DIFFERENT_LENGTH_CHANCE = 0.45
 
 function randomDigitCount(max) {
   return MIN_DIGITS + Math.floor(Math.random() * (max - MIN_DIGITS + 1))
@@ -44,6 +47,27 @@ function generateIndependentPair(maxDigitCount, allowZeros) {
   return { a, b, digitsA, digitsB }
 }
 
+// Deliberately different digit counts — recognizing that a longer
+// number always beats a shorter one (no need to even look at digits)
+// is its own comparison skill and deserves to come up reliably, not
+// just as a side effect of two independent lengths happening to differ.
+function generateDifferentLengthPair(maxDigitCount, allowZeros) {
+  if (maxDigitCount <= MIN_DIGITS) return generateIndependentPair(maxDigitCount, allowZeros)
+
+  const digitsA = randomDigitCount(maxDigitCount)
+  let digitsB
+  do {
+    digitsB = randomDigitCount(maxDigitCount)
+  } while (digitsB === digitsA)
+
+  return {
+    a: generateNumber(digitsA, allowZeros),
+    b: generateNumber(digitsB, allowZeros),
+    digitsA,
+    digitsB,
+  }
+}
+
 // Two numbers with the same digit count that differ in exactly one
 // digit, at a random position — deliberately close, so the student has
 // to actually compare place by place instead of eyeballing magnitude.
@@ -65,7 +89,7 @@ function generateSimilarPair(maxDigitCount, allowZeros) {
 
 function generatePair(maxDigitCount, allowZeros) {
   return Math.random() < DIFFERENT_LENGTH_CHANCE
-    ? generateIndependentPair(maxDigitCount, allowZeros)
+    ? generateDifferentLengthPair(maxDigitCount, allowZeros)
     : generateSimilarPair(maxDigitCount, allowZeros)
 }
 
