@@ -127,7 +127,7 @@ function ComparisonTask() {
           />
         </button>
 
-        <span className="comparison-vs">?</span>
+        <span className="comparison-vs">{isChecked ? (winner === 'a' ? '>' : '<') : '?'}</span>
 
         <button
           type="button"
