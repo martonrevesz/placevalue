@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { generateNumber } from '../utils/numberGenerator'
 import { checkAnswer } from '../utils/checkAnswer'
 import { formatWithSpaces } from '../utils/formatNumber'
+import { numberToHungarianWords } from '../utils/hungarianNumberWords'
 import { useScore } from '../hooks/useScore'
 import PlaceValueTable from '../components/PlaceValueTable/PlaceValueTable'
 import ScoreDisplay from '../components/ScoreDisplay/ScoreDisplay'
@@ -144,6 +145,7 @@ function DigitValuesTask() {
       </p>
 
       <PlaceValueTable mode="display" digitCount={digitCount} values={digitsOf(target, digitCount)} />
+      <p className="digit-values-words">{numberToHungarianWords(target)}</p>
 
       <div className="digit-values-table-wrap">
         <table className="digit-values-table">

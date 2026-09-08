@@ -54,6 +54,11 @@
   color: var(--color-ink);
 }
 
+.digit-values-words {
+  font-size: var(--text-base);
+  color: var(--color-ink-muted);
+}
+
 .digit-values-table-wrap {
   width: 100%;
   overflow-x: auto;
