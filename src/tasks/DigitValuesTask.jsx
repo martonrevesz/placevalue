@@ -76,11 +76,12 @@ function DigitValuesTask() {
     startNewRound(digitCount, value)
   }
 
-  const handleFieldChange = (rowIndex, field, value) => {
+  const handleFieldChange = (rowIndex, field, rawValue) => {
     if (isChecked) return
+    const digitsOnly = rawValue.replace(/\D/g, '')
     setAnswers((prev) => {
       const next = [...prev]
-      next[rowIndex] = { ...next[rowIndex], [field]: value }
+      next[rowIndex] = { ...next[rowIndex], [field]: digitsOnly }
       return next
     })
   }
@@ -173,7 +174,7 @@ function DigitValuesTask() {
                       <input
                         type="text"
                         inputMode="numeric"
-                        value={answers[i][key]}
+                        value={formatWithSpaces(answers[i][key])}
                         onChange={(e) => handleFieldChange(i, key, e.target.value)}
                         disabled={isChecked}
                       />

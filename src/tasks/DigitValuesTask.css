@@ -107,7 +107,7 @@
 }
 
 .digit-values-cell input {
-  width: 8ch;
+  width: 11ch;
   min-height: var(--touch-target-min);
   padding: var(--space-2);
   font-size: var(--text-base);
