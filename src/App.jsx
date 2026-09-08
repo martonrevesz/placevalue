@@ -9,6 +9,7 @@ import ExpandedFormTask from './tasks/ExpandedFormTask'
 import ComparisonTask from './tasks/ComparisonTask'
 import CashRegisterTask from './tasks/CashRegisterTask'
 import OrderNumbersTask from './tasks/OrderNumbersTask'
+import DigitValuesTask from './tasks/DigitValuesTask'
 import HungarianWordsDemo from './dev/HungarianWordsDemo'
 import './App.css'
 
@@ -18,7 +19,7 @@ const TASKS = [
   { label: 'Bontott alak', view: 'expanded-form' },
   { label: 'Számok összehasonlítása', view: 'compare-numbers' },
   { label: 'Számok sorba rendezése', view: 'order-numbers' },
-  { label: 'Helyi érték, alaki érték, valódi érték', view: null },
+  { label: 'Helyi érték, alaki érték, valódi érték', view: 'digit-values' },
   { label: 'A tökéletes pénztárgép', view: 'cash-register' },
 ]
 
@@ -67,6 +68,10 @@ function App() {
 
   if (view === 'order-numbers') {
     return <OrderNumbersTask />
+  }
+
+  if (view === 'digit-values') {
+    return <DigitValuesTask />
   }
 
   if (view === 'words-demo') {
