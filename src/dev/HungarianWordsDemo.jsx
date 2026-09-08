@@ -16,7 +16,16 @@ const TEST_CASES = [
   { target: 1000000, input: 'egymillió', expectAccept: true, note: 'milliónál az "egy" kötelező' },
   { target: 1000000, input: 'millió', expectAccept: false, note: 'milliónál nem hagyható el az "egy"' },
   { target: 123, input: 'száz huszonhárom', expectAccept: true, note: 'szóköz nem számít' },
-  { target: 345, input: 'Három-száz-negyven-öt', expectAccept: true, note: 'kötőjel és nagybetű nem számít' },
+  { target: 345, input: 'Háromszáznegyvenöt', expectAccept: true, note: 'nagybetű nem számít' },
+  { target: 339053, input: 'háromszázharminckilencezer-ötvenhárom', expectAccept: true, note: 'kötőjel a helyén' },
+  {
+    target: 339053,
+    input: 'háromszázharminckilencezerötvenhárom',
+    expectAccept: false,
+    note: 'hiányzó kötőjel — ez már nem elfogadott',
+  },
+  { target: 1500, input: 'egyezer-ötszáz', expectAccept: true, note: '"egyezer" is elfogadott, kötőjellel' },
+  { target: 1500, input: 'egyezerötszáz', expectAccept: false, note: 'itt is kell a kötőjel' },
 ]
 
 function ResultPill({ ok }) {

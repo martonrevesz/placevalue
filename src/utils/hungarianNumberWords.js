@@ -46,9 +46,8 @@ function groupWithMagnitude(group, magnitudeWord, dropsEgy) {
  * standard orthography: a hyphen precedes a segment that trails a
  * magnitude word (e.g. "hatszázharmincezer-tíz", "hárommillió-kettőezer"),
  * but a magnitude word with nothing after it stays plain ("kétezer", not
- * "kétezer-"). Normalization strips spaces/hyphens from student input
- * anyway, so this only affects how the answer is *displayed*, not how
- * it's checked. Handles numbers up to 999,999,999.
+ * "kétezer-"). The hyphen is graded, not decorative — see
+ * normalizeWrittenNumber. Handles numbers up to 999,999,999.
  */
 export function numberToHungarianWords(n) {
   if (n === 0) return 'nulla'
@@ -68,25 +67,32 @@ export function numberToHungarianWords(n) {
 
 /**
  * Normalizes student-typed written-number text for comparison:
- * lowercase, strip spaces/hyphens, and accept known equivalent forms
- * a student might reasonably write instead of the canonical one:
+ * lowercase, strip whitespace, and accept known equivalent forms a
+ * student might reasonably write instead of the canonical one:
  *   - "kettő" -> "két" right before száz/ezer/millió (e.g. "kettőezer"
  *     for "kétezer") — always a safe rewrite, "kettő" is never
  *     actually correct in that position.
  *   - "egyszáz" -> "száz" anywhere — the hundreds digit is always a
  *     single digit directly before "száz", so this is unambiguous.
  *   - "egyezer" -> "ezer", but only at the very start of the text or
- *     right after "millió" — i.e. only when "egy" is the *whole*
- *     thousands group, not the trailing digit of a larger one (like
- *     "hetvenegyezer" for 71 000, which must NOT be touched).
+ *     right after "millió" (optionally with the mandated hyphen in
+ *     between, e.g. "millió-egyezer") — i.e. only when "egy" is the
+ *     *whole* thousands group, not the trailing digit of a larger one
+ *     (like "hetvenegyezer" for 71 000, which must NOT be touched).
+ *
+ * Hyphens are deliberately NOT stripped: standard orthography requires
+ * one before a segment that trails a magnitude word (see
+ * numberToHungarianWords), so "háromszázharminckilencezerötvenhárom"
+ * (missing the hyphen before "ötvenhárom") is wrong, not just
+ * differently styled — only "...ezer-ötvenhárom" is accepted.
  */
 export function normalizeWrittenNumber(text) {
   return String(text)
     .toLowerCase()
-    .replace(/[\s-]/g, '')
+    .replace(/\s/g, '')
     .replace(/kettő(száz|ezer|millió)/g, 'két$1')
     .replace(/egyszáz/g, 'száz')
-    .replace(/(^|millió)egyezer/g, '$1ezer')
+    .replace(/(^|millió-?)egyezer/g, '$1ezer')
 }
 
 /**
