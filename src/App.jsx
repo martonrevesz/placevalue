@@ -7,6 +7,7 @@ import BuildNumberTask from './tasks/BuildNumberTask'
 import ReadTableTask from './tasks/ReadTableTask'
 import ExpandedFormTask from './tasks/ExpandedFormTask'
 import ComparisonTask from './tasks/ComparisonTask'
+import CashRegisterTask from './tasks/CashRegisterTask'
 import HungarianWordsDemo from './dev/HungarianWordsDemo'
 import './App.css'
 
@@ -17,6 +18,7 @@ const TASKS = [
   { label: 'Számok összehasonlítása', view: 'compare-numbers' },
   { label: 'Számok sorba rendezése', view: null },
   { label: 'Helyi érték, alaki érték, valódi érték', view: null },
+  { label: 'A tökéletes pénztárgép', view: 'cash-register' },
 ]
 
 function App() {
@@ -56,6 +58,10 @@ function App() {
 
   if (view === 'compare-numbers') {
     return <ComparisonTask />
+  }
+
+  if (view === 'cash-register') {
+    return <CashRegisterTask />
   }
 
   if (view === 'words-demo') {

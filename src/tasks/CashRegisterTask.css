@@ -1,0 +1,229 @@
+.cash-register-task {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-5);
+  padding: var(--space-5) var(--space-4) var(--space-8);
+}
+
+.cash-register-header {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.cash-register-header > div {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.cash-register-header a {
+  color: var(--color-primary);
+  font-size: var(--text-sm);
+}
+
+.cash-register-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-5);
+}
+
+.cash-register-slider {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.cash-register-slider input[type='range'] {
+  width: 200px;
+}
+
+.cash-register-intro {
+  max-width: 65ch;
+  font-size: var(--text-base);
+  color: var(--color-ink);
+  line-height: 1.5;
+}
+
+.cash-register-prompt {
+  font-size: var(--text-lg);
+  color: var(--color-ink);
+}
+
+/* Drawers, grouped into classes exactly like PlaceValueTable. */
+.cr-drawers {
+  display: inline-flex;
+  overflow-x: auto;
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+
+.cr-class {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3);
+}
+
+.cr-class:not(:last-child) {
+  border-right: 3px solid var(--color-primary);
+}
+
+.cr-class-name {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-primary);
+  text-align: center;
+  white-space: nowrap;
+}
+
+.cr-class-drawers {
+  display: flex;
+  gap: var(--space-3);
+}
+
+.cr-drawer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  min-width: var(--touch-target-min);
+}
+
+.cr-shape-stack {
+  position: relative;
+  width: 56px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cr-shape {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-surface);
+  background: var(--color-primary);
+  transform: translate(calc(var(--i) * -3px), calc(var(--i) * 3px));
+}
+
+.cr-shape.cr-coin {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+.cr-shape.cr-note {
+  width: 52px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+}
+
+.cr-drawer-count {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-ink);
+}
+
+.cr-drawer-abbr {
+  font-size: var(--text-xs);
+  color: var(--color-ink-muted);
+}
+
+.cash-register-input-row {
+  width: 100%;
+  max-width: 320px;
+}
+
+.cash-register-input {
+  width: 100%;
+  min-height: var(--touch-target-min);
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--text-lg);
+  font-variant-numeric: tabular-nums;
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.cash-register-input:disabled {
+  opacity: 0.7;
+}
+
+.cash-register-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.cash-register-actions button {
+  min-height: var(--touch-target-min);
+  padding: var(--space-3) var(--space-5);
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: var(--color-surface);
+  background: var(--color-primary);
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+}
+
+.cash-register-actions button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.cr-steps {
+  width: 100%;
+  max-width: 60ch;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  margin: 0;
+  list-style: none;
+  background: var(--color-surface);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.cr-steps li {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+  font-size: var(--text-sm);
+  color: var(--color-ink);
+}
+
+.cr-steps li.cr-step-exchanged {
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.cr-step-result {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+}
+
+.cash-register-reset-score {
+  font-size: var(--text-sm);
+  color: var(--color-ink-muted);
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+}
