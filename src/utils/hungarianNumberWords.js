@@ -42,10 +42,13 @@ function groupWithMagnitude(group, magnitudeWord, dropsEgy) {
 }
 
 /**
- * Canonical Hungarian spelled-out form of a natural number (no spaces
- * or hyphens — normalization strips those from student input anyway,
- * so there's nothing to gain from matching a particular convention).
- * Handles numbers up to 999,999,999.
+ * Canonical Hungarian spelled-out form of a natural number, following
+ * standard orthography: a hyphen precedes a segment that trails a
+ * magnitude word (e.g. "hatszázharmincezer-tíz", "hárommillió-kettőezer"),
+ * but a magnitude word with nothing after it stays plain ("kétezer", not
+ * "kétezer-"). Normalization strips spaces/hyphens from student input
+ * anyway, so this only affects how the answer is *displayed*, not how
+ * it's checked. Handles numbers up to 999,999,999.
  */
 export function numberToHungarianWords(n) {
   if (n === 0) return 'nulla'
@@ -54,11 +57,13 @@ export function numberToHungarianWords(n) {
   const thousands = Math.floor((n % 1_000_000) / 1000)
   const remainder = n % 1000
 
-  return (
-    groupWithMagnitude(millions, 'millió', false) +
-    groupWithMagnitude(thousands, 'ezer', true) +
-    wordsUnder1000(remainder)
-  )
+  const parts = [
+    groupWithMagnitude(millions, 'millió', false),
+    groupWithMagnitude(thousands, 'ezer', true),
+    wordsUnder1000(remainder),
+  ].filter(Boolean)
+
+  return parts.join('-')
 }
 
 /**

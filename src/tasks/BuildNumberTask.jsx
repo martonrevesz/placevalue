@@ -164,7 +164,11 @@ function BuildNumberTask() {
 
         {isChecked && (
           <FeedbackPill ok={result}>
-            {result ? 'Helyes!' : `Nem jó — a helyes szám: ${formatWithSpaces(target)}`}
+            {result
+              ? asWords
+                ? 'Helyes!'
+                : `Helyes! Szóval: ${numberToHungarianWords(target)}`
+              : `Nem jó — a helyes szám: ${formatWithSpaces(target)}`}
           </FeedbackPill>
         )}
       </div>
