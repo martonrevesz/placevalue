@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { generateNumber } from '../utils/numberGenerator'
 import { checkAnswer } from '../utils/checkAnswer'
 import { formatWithSpaces } from '../utils/formatNumber'
+import { numberToHungarianWords } from '../utils/hungarianNumberWords'
 import { useDigitEntry } from '../hooks/useDigitEntry'
 import { useScore } from '../hooks/useScore'
 import PlaceValueTable from '../components/PlaceValueTable/PlaceValueTable'
@@ -38,6 +39,7 @@ function BuildNumberTask() {
   const [digitCount, setDigitCount] = useState(DEFAULT_DIGITS)
   const [allowZeros, setAllowZeros] = useState(true)
   const [target, setTarget] = useState(() => generateNumber(DEFAULT_DIGITS, true))
+  const [asWords, setAsWords] = useState(() => Math.random() < 0.5)
   const [result, setResult] = useState(null)
 
   const { values, activeIndex, enterDigit, enterDigitAt, backspaceAt, clearActive, setActiveIndex, reset } =
@@ -48,6 +50,7 @@ function BuildNumberTask() {
 
   const startNewRound = (nextDigitCount, nextAllowZeros) => {
     setTarget(generateNumber(nextDigitCount, nextAllowZeros))
+    setAsWords(Math.random() < 0.5)
     setResult(null)
     reset()
   }
@@ -129,7 +132,8 @@ function BuildNumberTask() {
       </section>
 
       <p className="build-number-prompt">
-        Rakd ki a táblázatban ezt a számot: <strong>{formatWithSpaces(target)}</strong>
+        Rakd ki a táblázatban ezt a számot:{' '}
+        <strong>{asWords ? numberToHungarianWords(target) : formatWithSpaces(target)}</strong>
       </p>
       <p className="build-number-hint">A nem használt magasabb helyiértékeket hagyd üresen.</p>
 
