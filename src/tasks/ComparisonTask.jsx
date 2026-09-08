@@ -5,7 +5,7 @@ import { formatWithSpaces } from '../utils/formatNumber'
 import { useScore } from '../hooks/useScore'
 import PlaceValueTable from '../components/PlaceValueTable/PlaceValueTable'
 import ScoreDisplay from '../components/ScoreDisplay/ScoreDisplay'
-import { CheckIcon, CrossIcon } from '../components/icons/FeedbackIcons'
+import FeedbackPill from '../components/FeedbackPill/FeedbackPill'
 import './ComparisonTask.css'
 
 const MIN_DIGITS = 2
@@ -241,12 +241,11 @@ function ComparisonTask() {
         )}
 
         {isChecked && (
-          <span className={`feedback-pill ${result.ok ? 'feedback-success' : 'feedback-error'}`}>
-            {result.ok ? <CheckIcon size={20} /> : <CrossIcon size={20} />}
+          <FeedbackPill ok={result.ok}>
             {result.ok
               ? 'Helyes!'
               : `Nem jó — a ${winner === 'a' ? 'bal' : 'jobb'} oldali szám a nagyobb.`}
-          </span>
+          </FeedbackPill>
         )}
       </div>
 

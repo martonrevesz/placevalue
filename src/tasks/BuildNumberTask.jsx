@@ -7,7 +7,7 @@ import { useScore } from '../hooks/useScore'
 import PlaceValueTable from '../components/PlaceValueTable/PlaceValueTable'
 import DigitPad from '../components/DigitPad/DigitPad'
 import ScoreDisplay from '../components/ScoreDisplay/ScoreDisplay'
-import { CheckIcon, CrossIcon } from '../components/icons/FeedbackIcons'
+import FeedbackPill from '../components/FeedbackPill/FeedbackPill'
 import './BuildNumberTask.css'
 
 const MIN_DIGITS = 2
@@ -159,10 +159,9 @@ function BuildNumberTask() {
         )}
 
         {isChecked && (
-          <span className={`feedback-pill ${result ? 'feedback-success' : 'feedback-error'}`}>
-            {result ? <CheckIcon size={20} /> : <CrossIcon size={20} />}
+          <FeedbackPill ok={result}>
             {result ? 'Helyes!' : `Nem jó — a helyes szám: ${formatWithSpaces(target)}`}
-          </span>
+          </FeedbackPill>
         )}
       </div>
 

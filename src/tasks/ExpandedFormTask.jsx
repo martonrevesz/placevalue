@@ -6,7 +6,7 @@ import { formatWithSpaces } from '../utils/formatNumber'
 import { useScore } from '../hooks/useScore'
 import PlaceValueTable from '../components/PlaceValueTable/PlaceValueTable'
 import ScoreDisplay from '../components/ScoreDisplay/ScoreDisplay'
-import { CheckIcon, CrossIcon } from '../components/icons/FeedbackIcons'
+import FeedbackPill from '../components/FeedbackPill/FeedbackPill'
 import './ExpandedFormTask.css'
 
 const MIN_DIGITS = 2
@@ -148,10 +148,9 @@ function ExpandedFormTask() {
         )}
 
         {isChecked && (
-          <span className={`feedback-pill ${result ? 'feedback-success' : 'feedback-error'}`}>
-            {result ? <CheckIcon size={20} /> : <CrossIcon size={20} />}
+          <FeedbackPill ok={result}>
             {result ? 'Helyes!' : `Nem jó — a helyes válasz: ${correctAnswerText}`}
-          </span>
+          </FeedbackPill>
         )}
       </div>
 

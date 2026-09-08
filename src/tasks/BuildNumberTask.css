@@ -89,26 +89,6 @@
   cursor: not-allowed;
 }
 
-.feedback-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  padding: var(--space-2) var(--space-4);
-  border-radius: var(--radius-lg);
-  font-size: var(--text-base);
-  font-weight: 600;
-}
-
-.feedback-success {
-  background: var(--color-success-bg);
-  color: var(--color-success);
-}
-
-.feedback-error {
-  background: var(--color-error-bg);
-  color: var(--color-error);
-}
-
 .build-number-reset-score {
   font-size: var(--text-sm);
   color: var(--color-ink-muted);
