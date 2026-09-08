@@ -10,7 +10,10 @@ import HintIcon from '../components/HintIcon/HintIcon'
 import './DigitValuesTask.css'
 
 const MIN_DIGITS = 2
-const MAX_DIGITS = 9
+// Capped below the app-wide 9: needing the true value of a hundred-
+// millions digit (e.g. 900 000 000) is confusing to build/verify at a
+// glance, more than the exercise's concept is worth testing.
+const MAX_DIGITS = 8
 const DEFAULT_DIGITS = 4
 
 const FIELDS = [
