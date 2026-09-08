@@ -1,0 +1,29 @@
+.drag-sort-list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.drag-sort-separator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.drag-sort-item {
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  transition: box-shadow 0.15s;
+}
+
+.drag-sort-item.is-dragging {
+  cursor: grabbing;
+  z-index: 10;
+  box-shadow: 0 6px 16px rgba(43, 38, 32, 0.2);
+}
+
+.drag-sort-item.is-disabled {
+  cursor: default;
+}
