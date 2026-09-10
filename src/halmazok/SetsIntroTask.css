@@ -1,0 +1,73 @@
+.sets-intro-task {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-5);
+  padding: var(--space-5) var(--space-4) var(--space-8);
+}
+
+.sets-intro-header {
+  width: 100%;
+  max-width: 560px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.sets-intro-header > div {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.sets-intro-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-5);
+}
+
+.sets-intro-checkbox {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.sets-intro-prompt {
+  max-width: 560px;
+  text-align: center;
+  font-size: var(--text-base);
+  color: var(--color-ink);
+}
+
+.sets-intro-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+}
+
+.sets-intro-actions button {
+  min-height: var(--touch-target-min);
+  padding: var(--space-3) var(--space-5);
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: var(--color-surface);
+  background: var(--color-primary);
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+}
+
+.sets-intro-reset-score {
+  font-size: var(--text-sm);
+  color: var(--color-ink-muted);
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+}

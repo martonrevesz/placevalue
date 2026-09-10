@@ -11,6 +11,7 @@ import ComparisonTask from './tasks/ComparisonTask'
 import CashRegisterTask from './tasks/CashRegisterTask'
 import OrderNumbersTask from './tasks/OrderNumbersTask'
 import DigitValuesTask from './tasks/DigitValuesTask'
+import SetsIntroTask from './halmazok/SetsIntroTask'
 import HungarianWordsDemo from './dev/HungarianWordsDemo'
 import './App.css'
 
@@ -132,21 +133,7 @@ function App() {
   }
 
   if (subject === 'halmazok') {
-    return (
-      <div className="app-shell">
-        <button type="button" className="back-link" onClick={() => setSubject(null)}>
-          ← Vissza a főoldalra
-        </button>
-
-        <header>
-          <h1>Halmazok</h1>
-        </header>
-
-        <main className="content-placeholder">
-          <p>Hamarosan…</p>
-        </main>
-      </div>
-    )
+    return <SetsIntroTask onBack={() => setSubject(null)} />
   }
 
   return (

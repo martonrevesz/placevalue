@@ -1,0 +1,219 @@
+.venn-root {
+  /* Set B's accent — a warm amber, distinct from --color-primary (set
+     A) and from the success/error greens/reds used for feedback. */
+  --venn-color-b: #b5763a;
+  --venn-color-b-bg: rgba(181, 118, 58, 0.12);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+  width: 100%;
+}
+
+.venn-canvas {
+  position: relative;
+  width: 100%;
+  max-width: 900px;
+  aspect-ratio: 1.75 / 1;
+}
+
+/* Purely decorative — the actual "base only" drop target is
+   .venn-base-zone below, a dedicated strip rather than this rect's
+   thin leftover margin (which would be a cramped, ambiguous target,
+   especially on a phone). */
+.venn-base {
+  position: absolute;
+  inset: 0;
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  pointer-events: none;
+}
+
+.venn-base-label {
+  position: absolute;
+  top: var(--space-2);
+  left: var(--space-3);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-ink-muted);
+}
+
+.venn-circle {
+  position: absolute;
+  top: 8%;
+  height: 50%;
+  width: 50%;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.venn-circle-a {
+  left: 6%;
+  width: 52%;
+  border: 3px solid var(--color-primary);
+  background: var(--color-primary-bg);
+}
+
+.venn-circle-b {
+  left: 36%;
+  width: 52%;
+  border: 3px solid var(--venn-color-b);
+  background: var(--venn-color-b-bg);
+}
+
+.venn-set-label {
+  position: absolute;
+  top: 10%;
+  font-weight: 700;
+  font-size: var(--text-base);
+  pointer-events: none;
+}
+
+.venn-set-label-a {
+  left: 10%;
+  color: var(--color-primary);
+}
+
+.venn-set-label-b {
+  left: 68%;
+  color: var(--venn-color-b);
+}
+
+.venn-zone {
+  /* Inset well within the circle's height (which spans 8%-54%), not
+     just far enough to clear the top label — a circle narrows toward
+     both its top AND bottom edge, so content centered across the full
+     height ends up visually sitting on the bottom curve, not inside
+     it. This band sits in the circle's widest, safely-inside middle. */
+  position: absolute;
+  top: 16%;
+  height: 36%;
+  display: flex;
+  flex-wrap: wrap;
+  align-content: center;
+  justify-content: center;
+  gap: var(--space-1);
+  padding: var(--space-1);
+  overflow: auto;
+  border-radius: var(--radius-sm);
+  transition: background 0.15s;
+  /* A visible scrollbar only shows up for genuinely crowded zones —
+     keep it slim and quiet rather than a jarring native default. */
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border) transparent;
+}
+
+.venn-zone::-webkit-scrollbar {
+  width: 6px;
+}
+
+.venn-zone::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 3px;
+}
+
+.venn-zone::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.venn-zone.is-hover {
+  background: rgba(43, 38, 32, 0.08);
+}
+
+.venn-zone-onlyA {
+  left: 6%;
+  width: 30%;
+}
+
+.venn-zone-intersection {
+  left: 36%;
+  width: 22%;
+}
+
+.venn-zone-onlyB {
+  left: 58%;
+  width: 30%;
+}
+
+.venn-base-zone {
+  left: 4%;
+  width: 92%;
+  top: 60%;
+  height: 34%;
+  /* Its own dashed-border identity, matching the tray — without this
+     it's just blank background inside .venn-base and reads as unused
+     space rather than a real drop target. */
+  border: 2px dashed var(--color-border);
+}
+
+.venn-base-zone.is-hover {
+  border-color: var(--color-primary-border);
+}
+
+.venn-tray {
+  width: 100%;
+  max-width: 900px;
+  min-height: var(--touch-target-min);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border: 2px dashed var(--color-border);
+  border-radius: var(--radius-md);
+  justify-content: center;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.venn-tray.is-hover {
+  background: var(--color-primary-bg);
+  border-color: var(--color-primary-border);
+}
+
+.venn-chip {
+  min-width: var(--touch-target-min);
+  min-height: var(--touch-target-min);
+  max-width: 110px;
+  padding: var(--space-2) var(--space-3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  white-space: normal;
+  word-break: break-word;
+  line-height: 1.2;
+  background: var(--color-surface);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-ink);
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+
+.venn-chip.is-drag-source {
+  opacity: 0.3;
+}
+
+.venn-chip.is-correct {
+  border-color: var(--color-success);
+  background: var(--color-success-bg);
+  color: var(--color-success);
+}
+
+.venn-chip.is-incorrect {
+  border-color: var(--color-error);
+  background: var(--color-error-bg);
+  color: var(--color-error);
+}
+
+.venn-chip-ghost {
+  position: fixed;
+  z-index: 1000;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  box-shadow: 0 6px 16px rgba(43, 38, 32, 0.25);
+}
