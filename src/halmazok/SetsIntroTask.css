@@ -22,6 +22,11 @@
   gap: var(--space-1);
 }
 
+.sets-intro-header a {
+  color: var(--color-primary);
+  font-size: var(--text-sm);
+}
+
 .sets-intro-controls {
   display: flex;
   flex-wrap: wrap;

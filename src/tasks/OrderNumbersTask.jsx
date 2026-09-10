@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { generateNumber } from '../utils/numberGenerator'
 import { formatWithSpaces } from '../utils/formatNumber'
+import { shuffle } from '../utils/shuffle'
 import { useScore } from '../hooks/useScore'
 import DragSortList from '../components/DragSortList/DragSortList'
 import ScoreDisplay from '../components/ScoreDisplay/ScoreDisplay'
@@ -12,15 +13,6 @@ const MAX_DIGITS = 9
 const DEFAULT_DIGITS = 4
 
 const COUNT = 4
-
-function shuffle(array) {
-  const result = [...array]
-  for (let i = result.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1))
-    ;[result[i], result[j]] = [result[j], result[i]]
-  }
-  return result
-}
 
 // Most numbers use the full (max) digit count; occasionally one uses a
 // randomly smaller one — a minority-case mixed length forces the

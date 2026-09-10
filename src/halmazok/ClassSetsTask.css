@@ -1,0 +1,115 @@
+.class-sets-task {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-5);
+  padding: var(--space-5) var(--space-4) var(--space-8);
+}
+
+.class-sets-header {
+  width: 100%;
+  max-width: 560px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.class-sets-header > div {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.class-sets-header a {
+  color: var(--color-primary);
+  font-size: var(--text-sm);
+}
+
+.class-sets-prompt {
+  max-width: 560px;
+  text-align: center;
+  font-size: var(--text-base);
+  color: var(--color-ink);
+}
+
+.class-sets-counts {
+  width: 100%;
+  max-width: 560px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.class-sets-count-field {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+  font-size: var(--text-sm);
+  color: var(--color-ink);
+}
+
+.class-sets-count-field input {
+  width: 6ch;
+  min-height: var(--touch-target-min);
+  padding: var(--space-2);
+  font-size: var(--text-base);
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-sm);
+}
+
+.class-sets-count-field.is-correct input {
+  border-color: var(--color-success);
+  background: var(--color-success-bg);
+  color: var(--color-success);
+}
+
+.class-sets-count-field.is-incorrect input {
+  border-color: var(--color-error);
+  background: var(--color-error-bg);
+  color: var(--color-error);
+}
+
+.class-sets-count-hint {
+  font-size: var(--text-xs);
+  color: var(--color-error);
+}
+
+.class-sets-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+}
+
+.class-sets-actions button {
+  min-height: var(--touch-target-min);
+  padding: var(--space-3) var(--space-5);
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: var(--color-surface);
+  background: var(--color-primary);
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+}
+
+.class-sets-actions button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.class-sets-reset-score {
+  font-size: var(--text-sm);
+  color: var(--color-ink-muted);
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+}

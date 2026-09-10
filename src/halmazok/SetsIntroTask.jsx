@@ -24,7 +24,7 @@ function emptyPlacement() {
   return Object.fromEntries(ELEMENTS.map((el) => [el.id, 'unplaced']))
 }
 
-function SetsIntroTask({ onBack }) {
+function SetsIntroTask() {
   const [hasBaseSet, setHasBaseSet] = useState(true)
   const [placement, setPlacement] = useState(emptyPlacement)
   const [result, setResult] = useState(null)
@@ -64,10 +64,8 @@ function SetsIntroTask({ onBack }) {
     <div className="sets-intro-task">
       <header className="sets-intro-header">
         <div>
-          <h1>Halmazok</h1>
-          <button type="button" className="back-link" onClick={onBack}>
-            ← Vissza a főoldalra
-          </button>
+          <h1>Halmazok — számok</h1>
+          <a href="./">← Vissza az alkalmazáshoz</a>
         </div>
         <ScoreDisplay correct={correct} total={total} />
       </header>

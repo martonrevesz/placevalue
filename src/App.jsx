@@ -12,6 +12,9 @@ import CashRegisterTask from './tasks/CashRegisterTask'
 import OrderNumbersTask from './tasks/OrderNumbersTask'
 import DigitValuesTask from './tasks/DigitValuesTask'
 import SetsIntroTask from './halmazok/SetsIntroTask'
+import OnePropertyTask from './halmazok/OnePropertyTask'
+import TwoPropertiesTask from './halmazok/TwoPropertiesTask'
+import HalmazokHome from './halmazok/HalmazokHome'
 import HungarianWordsDemo from './dev/HungarianWordsDemo'
 import './App.css'
 
@@ -84,6 +87,18 @@ function App() {
     return <HungarianWordsDemo />
   }
 
+  if (view === 'sets-one-property') {
+    return <OnePropertyTask />
+  }
+
+  if (view === 'sets-two-properties') {
+    return <TwoPropertiesTask />
+  }
+
+  if (view === 'sets-numbers') {
+    return <SetsIntroTask />
+  }
+
   if (subject === 'placevalue') {
     return (
       <div className="app-shell">
@@ -133,7 +148,7 @@ function App() {
   }
 
   if (subject === 'halmazok') {
-    return <SetsIntroTask onBack={() => setSubject(null)} />
+    return <HalmazokHome onBack={() => setSubject(null)} />
   }
 
   return (
