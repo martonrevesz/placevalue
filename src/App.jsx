@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import StyleGuide from './dev/StyleGuide'
 import PlaceValueTableDemo from './dev/PlaceValueTableDemo'
 import NumberGeneratorDemo from './dev/NumberGeneratorDemo'
@@ -24,6 +25,10 @@ const TASKS = [
 ]
 
 function App() {
+  // Which subject area is showing on the plain (no ?view=) URL. Not
+  // reflected in the URL on purpose (yet) — a plain in-memory choice,
+  // separate from the ?view= deep-linking the individual tasks use.
+  const [subject, setSubject] = useState(null)
   const view = new URLSearchParams(window.location.search).get('view')
 
   if (view === 'styleguide') {
@@ -78,45 +83,86 @@ function App() {
     return <HungarianWordsDemo />
   }
 
+  if (subject === 'placevalue') {
+    return (
+      <div className="app-shell">
+        <button type="button" className="back-link" onClick={() => setSubject(null)}>
+          ← Vissza a főoldalra
+        </button>
+
+        <header>
+          <h1>Helyiérték gyakorló</h1>
+        </header>
+
+        <nav aria-label="Feladatok">
+          <ul className="task-nav">
+            {TASKS.map((task) => (
+              <li key={task.label}>
+                {task.view ? (
+                  <a className="task-nav-item" href={`?view=${task.view}`}>
+                    {task.label}
+                  </a>
+                ) : (
+                  <span className="task-nav-item">{task.label}</span>
+                )}
+              </li>
+            ))}
+          </ul>
+        </nav>
+
+        <main className="content-placeholder">
+          <p>Itt jelenik majd meg a kiválasztott feladat.</p>
+        </main>
+
+        <footer className="dev-footer">
+          <a href="?view=styleguide">Stílus referencia (fejlesztői)</a>
+          {' · '}
+          <a href="?view=table-demo">Táblázat demó (fejlesztői)</a>
+          {' · '}
+          <a href="?view=generator-demo">Számgenerátor demó (fejlesztői)</a>
+          {' · '}
+          <a href="?view=answer-demo">Válaszellenőrző demó (fejlesztői)</a>
+          {' · '}
+          <a href="?view=score-demo">Pontszám demó (fejlesztői)</a>
+          {' · '}
+          <a href="?view=words-demo">Számnevek demó (fejlesztői)</a>
+        </footer>
+      </div>
+    )
+  }
+
+  if (subject === 'halmazok') {
+    return (
+      <div className="app-shell">
+        <button type="button" className="back-link" onClick={() => setSubject(null)}>
+          ← Vissza a főoldalra
+        </button>
+
+        <header>
+          <h1>Halmazok</h1>
+        </header>
+
+        <main className="content-placeholder">
+          <p>Hamarosan…</p>
+        </main>
+      </div>
+    )
+  }
+
   return (
     <div className="app-shell">
       <header>
-        <h1>Helyiérték gyakorló</h1>
+        <h1>Matematika gyakorló feladatok</h1>
       </header>
 
-      <nav aria-label="Feladatok">
-        <ul className="task-nav">
-          {TASKS.map((task) => (
-            <li key={task.label}>
-              {task.view ? (
-                <a className="task-nav-item" href={`?view=${task.view}`}>
-                  {task.label}
-                </a>
-              ) : (
-                <span className="task-nav-item">{task.label}</span>
-              )}
-            </li>
-          ))}
-        </ul>
-      </nav>
-
-      <main className="content-placeholder">
-        <p>Itt jelenik majd meg a kiválasztott feladat.</p>
-      </main>
-
-      <footer className="dev-footer">
-        <a href="?view=styleguide">Stílus referencia (fejlesztői)</a>
-        {' · '}
-        <a href="?view=table-demo">Táblázat demó (fejlesztői)</a>
-        {' · '}
-        <a href="?view=generator-demo">Számgenerátor demó (fejlesztői)</a>
-        {' · '}
-        <a href="?view=answer-demo">Válaszellenőrző demó (fejlesztői)</a>
-        {' · '}
-        <a href="?view=score-demo">Pontszám demó (fejlesztői)</a>
-        {' · '}
-        <a href="?view=words-demo">Számnevek demó (fejlesztői)</a>
-      </footer>
+      <div className="task-nav">
+        <button type="button" className="task-nav-item" onClick={() => setSubject('placevalue')}>
+          Helyiérték gyakorló
+        </button>
+        <button type="button" className="task-nav-item" onClick={() => setSubject('halmazok')}>
+          Halmazok
+        </button>
+      </div>
     </div>
   )
 }

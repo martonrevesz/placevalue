@@ -31,15 +31,29 @@
   text-decoration: none;
 }
 
-a.task-nav-item {
+a.task-nav-item,
+button.task-nav-item {
   border-color: var(--color-primary);
   color: var(--color-primary);
   font-weight: 600;
+  font-family: inherit;
   cursor: pointer;
 }
 
-a.task-nav-item:hover {
+a.task-nav-item:hover,
+button.task-nav-item:hover {
   background: var(--color-primary-bg);
+}
+
+.back-link {
+  align-self: flex-start;
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--color-primary);
+  font-size: var(--text-sm);
+  font-family: inherit;
+  cursor: pointer;
 }
 
 .content-placeholder {
