@@ -63,6 +63,15 @@
   background: var(--venn-color-b-bg);
 }
 
+/* Single-set mode (hasSetB={false}): one centered, slightly bigger
+   circle instead of two overlapping ones. Same top/height as the
+   two-circle layout, so the base-zone strip below needs no changes
+   between modes — only the horizontal position/size differs. */
+.venn-circle-a-solo {
+  left: 22%;
+  width: 56%;
+}
+
 .venn-set-label {
   position: absolute;
   top: 10%;
@@ -74,6 +83,10 @@
 .venn-set-label-a {
   left: 10%;
   color: var(--color-primary);
+}
+
+.venn-set-label-a-solo {
+  left: 46%;
 }
 
 .venn-set-label-b {
@@ -125,6 +138,11 @@
 .venn-zone-onlyA {
   left: 6%;
   width: 30%;
+}
+
+.venn-zone-onlyA-solo {
+  left: 22%;
+  width: 56%;
 }
 
 .venn-zone-intersection {

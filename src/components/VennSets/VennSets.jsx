@@ -8,20 +8,27 @@ function pointInRect(x, y, rect) {
 }
 
 /**
- * A drag-and-drop Venn diagram for two sets (A, B) with an optional
- * enclosing base/universal set. Elements are dragged between four
- * possible homes: the tray (unplaced), base-only (a dedicated strip
- * below the circles, rather than the thin leftover margin around them
- * — easier to hit on a phone — only reachable when `hasBaseSet`),
- * A-only, B-only, and the A∩B intersection. The four zones are
- * disjoint rectangles, so hit-testing is a plain "which rect contains
+ * A drag-and-drop Venn diagram for one or two sets (A, and optionally
+ * B) with an optional enclosing base/universal set. Elements are
+ * dragged between homes: the tray (unplaced), base-only (a dedicated
+ * strip below the circle(s), rather than the thin leftover margin
+ * around them — easier to hit on a phone — only reachable when
+ * `hasBaseSet`), A-only, and — when `hasSetB` — B-only and the A∩B
+ * intersection too. Set `hasSetB={false}` for a task that only needs
+ * one set and its base set (e.g. "which of these are/aren't in A?");
+ * the diagram collapses to a single centered circle, and 'onlyB'/
+ * 'intersection' simply aren't offered as drop targets. Every zone is
+ * a disjoint rectangle, so hit-testing is a plain "which rect contains
  * this point" check with no priority/overlap cases to worry about.
  *
  * Controlled: `placement` is `{ [elementId]: 'unplaced' | 'base' |
  * 'onlyA' | 'onlyB' | 'intersection' }`, owned by the caller, updated
  * via `onPlacementChange(nextPlacement)` as soon as a drag ends over a
  * valid zone (a drop outside every zone leaves the placement
- * unchanged, rather than losing the element).
+ * unchanged, rather than losing the element). The zone vocabulary is
+ * the same regardless of `hasSetB` — 'onlyA' just means "inside A"
+ * whether or not a B exists to subtract — so a caller's placement/
+ * feedback handling doesn't need to branch on which mode is active.
  *
  * Mouse and touch both work via Pointer Events — the dragged element
  * is shown as a `position: fixed` ghost that follows the pointer, so
@@ -36,6 +43,7 @@ function pointInRect(x, y, rect) {
 function VennSets({
   labelA,
   labelB,
+  hasSetB = true,
   hasBaseSet = false,
   baseLabel,
   elements,
@@ -81,6 +89,7 @@ function VennSets({
   const zoneAt = (x, y) => {
     for (const zone of ZONES) {
       if (zone === 'base' && !hasBaseSet) continue
+      if ((zone === 'onlyB' || zone === 'intersection') && !hasSetB) continue
       const el = zoneRefs.current[zone]
       if (el && pointInRect(x, y, el.getBoundingClientRect())) return zone
     }
@@ -151,29 +160,35 @@ function VennSets({
           </div>
         )}
 
-        <div className="venn-circle venn-circle-a" />
-        <div className="venn-circle venn-circle-b" />
-        <div className="venn-set-label venn-set-label-a">{labelA}</div>
-        <div className="venn-set-label venn-set-label-b">{labelB}</div>
+        <div className={`venn-circle venn-circle-a ${!hasSetB ? 'venn-circle-a-solo' : ''}`} />
+        {hasSetB && <div className="venn-circle venn-circle-b" />}
+        <div className={`venn-set-label venn-set-label-a ${!hasSetB ? 'venn-set-label-a-solo' : ''}`}>
+          {labelA}
+        </div>
+        {hasSetB && <div className="venn-set-label venn-set-label-b">{labelB}</div>}
 
         <div
           ref={setOnlyARef}
-          className={`venn-zone venn-zone-onlyA ${hoverZone === 'onlyA' ? 'is-hover' : ''}`}
+          className={`venn-zone venn-zone-onlyA ${!hasSetB ? 'venn-zone-onlyA-solo' : ''} ${hoverZone === 'onlyA' ? 'is-hover' : ''}`}
         >
           {inZone('onlyA').map(renderChip)}
         </div>
-        <div
-          ref={setIntersectionRef}
-          className={`venn-zone venn-zone-intersection ${hoverZone === 'intersection' ? 'is-hover' : ''}`}
-        >
-          {inZone('intersection').map(renderChip)}
-        </div>
-        <div
-          ref={setOnlyBRef}
-          className={`venn-zone venn-zone-onlyB ${hoverZone === 'onlyB' ? 'is-hover' : ''}`}
-        >
-          {inZone('onlyB').map(renderChip)}
-        </div>
+        {hasSetB && (
+          <div
+            ref={setIntersectionRef}
+            className={`venn-zone venn-zone-intersection ${hoverZone === 'intersection' ? 'is-hover' : ''}`}
+          >
+            {inZone('intersection').map(renderChip)}
+          </div>
+        )}
+        {hasSetB && (
+          <div
+            ref={setOnlyBRef}
+            className={`venn-zone venn-zone-onlyB ${hoverZone === 'onlyB' ? 'is-hover' : ''}`}
+          >
+            {inZone('onlyB').map(renderChip)}
+          </div>
+        )}
 
         {hasBaseSet && (
           <div
