@@ -34,71 +34,108 @@
   color: var(--color-ink);
 }
 
+/* A grid, not flex-wrap: with a flexible middle column and two fixed
+   side columns, flex-wrap breaks items onto new rows one at a time as
+   space runs out — the grow-column eats the whole remaining row before
+   the wrap check ever reaches the last side panel, stranding it alone
+   below. Grid lays out all three columns as one unit instead. */
 .class-sets-layout {
   width: 100%;
-  max-width: 800px;
-  display: flex;
-  flex-wrap: wrap-reverse;
-  align-items: flex-start;
-  justify-content: center;
+  max-width: 1080px;
+  display: grid;
+  grid-template-columns: 1fr;
+  justify-items: center;
   gap: var(--space-5);
 }
 
+@media (min-width: 900px) {
+  .class-sets-layout {
+    grid-template-columns: 190px 1fr 190px;
+    align-items: start;
+  }
+}
+
 .class-sets-diagram-column {
-  flex: 1 1 480px;
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: var(--space-4);
 }
 
-.class-sets-sheet {
-  flex: 0 0 200px;
+.gender-panel {
+  width: 100%;
+  max-width: 190px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.gender-panel-icon {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--color-surface);
+}
+
+.gender-panel.gender-F .gender-panel-icon {
+  background: #b5568c;
+}
+
+.gender-panel.gender-M .gender-panel-icon {
+  background: #2f6f8f;
+}
+
+.gender-panel-cards {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.gender-panel-card {
   background: var(--color-surface);
   border: 2px solid var(--color-border);
   border-radius: var(--radius-md);
-  padding: var(--space-3);
+  padding: var(--space-2) var(--space-3);
 }
 
-.class-sets-sheet-title {
-  margin: 0 0 var(--space-2);
-  font-size: var(--text-sm);
+.gender-panel-card-name {
   font-weight: 600;
+  font-size: var(--text-sm);
+  margin-bottom: var(--space-1);
+}
+
+.gender-panel-card-props {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.gender-panel-prop {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-size: var(--text-xs);
   color: var(--color-ink-muted);
 }
 
-.class-sets-sheet-table {
-  border-collapse: collapse;
-  width: 100%;
-}
-
-.class-sets-sheet-table th,
-.class-sets-sheet-table td {
-  padding: var(--space-1) var(--space-2);
-  border-bottom: 1px solid var(--color-border);
-  font-size: var(--text-sm);
-}
-
-.class-sets-sheet-table th {
-  color: var(--color-primary);
+.gender-panel-prop-label {
   font-weight: 600;
-  text-align: left;
 }
 
-.class-sets-sheet-table th:not(:first-child),
-.class-sets-sheet-cell {
-  text-align: center;
-}
-
-.class-sets-sheet-name {
-  white-space: nowrap;
-}
-
-.class-sets-sheet-yes {
+.gender-panel-yes {
   color: var(--color-success);
 }
 
-.class-sets-sheet-no {
+.gender-panel-no {
   color: var(--color-error);
 }
 
@@ -201,30 +238,6 @@
 
 .student-card-name {
   font-size: var(--text-sm);
-}
-
-.student-card-props {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 3px;
-}
-
-.student-card-prop {
-  padding: 1px 4px;
-  border-radius: var(--radius-sm);
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  background: var(--color-bg);
-  color: var(--color-ink-muted);
-  border: 1px solid var(--color-border);
-}
-
-.student-card-prop.is-active {
-  background: var(--color-primary-bg);
-  color: var(--color-primary);
-  border-color: var(--color-primary-border);
 }
 
 .class-sets-reset-score {

@@ -1,12 +1,15 @@
 import { useMemo, useState } from 'react'
 import VennSets from '../components/VennSets/VennSets'
 import { STUDENTS, PROPERTIES, valuesFor } from './students'
-import StudentDataSheet from './StudentDataSheet'
+import GenderPanel from './GenderPanel'
 import StudentCard from './StudentCard'
 import { useScore } from '../hooks/useScore'
 import ScoreDisplay from '../components/ScoreDisplay/ScoreDisplay'
 import FeedbackPill from '../components/FeedbackPill/FeedbackPill'
 import './ClassSetsTask.css'
+
+const GIRLS = STUDENTS.filter((s) => s.gender === 'F')
+const BOYS = STUDENTS.filter((s) => s.gender === 'M')
 
 function emptyPlacement() {
   return Object.fromEntries(STUDENTS.map((s) => [s.id, 'unplaced']))
@@ -64,7 +67,7 @@ function OnePropertyTask() {
       </p>
 
       <div className="class-sets-layout">
-        <StudentDataSheet students={STUDENTS} columns={[{ label: 'A', values: hasProperty }]} />
+        <GenderPanel gender="F" students={GIRLS} columns={[{ label: 'A', values: hasProperty }]} />
 
         <div className="class-sets-diagram-column">
           <VennSets
@@ -79,6 +82,8 @@ function OnePropertyTask() {
             feedback={isChecked ? result.feedback : null}
           />
         </div>
+
+        <GenderPanel gender="M" students={BOYS} columns={[{ label: 'A', values: hasProperty }]} />
       </div>
 
       <div className="class-sets-actions">
