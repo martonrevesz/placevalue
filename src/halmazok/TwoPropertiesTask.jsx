@@ -1,66 +1,65 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import VennSets from '../components/VennSets/VennSets'
-import { pickStudents } from './students'
+import { STUDENTS, PROPERTIES, valuesFor } from './students'
+import StudentDataSheet from './StudentDataSheet'
+import StudentCard from './StudentCard'
 import { checkAnswer } from '../utils/checkAnswer'
 import { useScore } from '../hooks/useScore'
 import ScoreDisplay from '../components/ScoreDisplay/ScoreDisplay'
 import FeedbackPill from '../components/FeedbackPill/FeedbackPill'
 import './ClassSetsTask.css'
 
-const STUDENT_COUNT = 8
-
-const PROPERTIES = [
-  { key: 'bike', label: 'kerékpárral jár iskolába' },
-  { key: 'english', label: 'angolul tanul' },
-  { key: 'swim', label: 'úszásra jár' },
-  { key: 'football', label: 'focizik' },
-]
-
-function pickTwoProperties() {
-  const shuffled = [...PROPERTIES].sort(() => Math.random() - 0.5)
-  return [shuffled[0], shuffled[1]]
+// Every pair of properties, in a fixed order — cycled through
+// deterministically rather than picked at random.
+const PROPERTY_PAIRS = []
+for (let i = 0; i < PROPERTIES.length; i++) {
+  for (let j = i + 1; j < PROPERTIES.length; j++) {
+    PROPERTY_PAIRS.push([PROPERTIES[i], PROPERTIES[j]])
+  }
 }
 
-function generateRound() {
-  const students = pickStudents(STUDENT_COUNT)
-  const [propertyA, propertyB] = pickTwoProperties()
-  const hasA = Object.fromEntries(students.map((s) => [s.id, Math.random() < 0.5]))
-  const hasB = Object.fromEntries(students.map((s) => [s.id, Math.random() < 0.5]))
-  return { students, propertyA, propertyB, hasA, hasB }
-}
-
-function expectedZone(round, id) {
-  const a = round.hasA[id]
-  const b = round.hasB[id]
+function expectedZone(hasA, hasB, id) {
+  const a = hasA[id]
+  const b = hasB[id]
   if (a && b) return 'intersection'
   if (a) return 'onlyA'
   if (b) return 'onlyB'
   return 'base'
 }
 
-function emptyPlacement(students) {
-  return Object.fromEntries(students.map((s) => [s.id, 'unplaced']))
+function emptyPlacement() {
+  return Object.fromEntries(STUDENTS.map((s) => [s.id, 'unplaced']))
 }
 
 function TwoPropertiesTask() {
-  const [round, setRound] = useState(generateRound)
-  const [placement, setPlacement] = useState(() => emptyPlacement(round.students))
+  // The roster and each student's real attributes never change, only
+  // which pair of properties is being asked about this round.
+  const [pairIndex, setPairIndex] = useState(0)
+  const [placement, setPlacement] = useState(emptyPlacement)
   const [intersectionInput, setIntersectionInput] = useState('')
   const [unionInput, setUnionInput] = useState('')
   const [result, setResult] = useState(null)
 
   const { correct, total, recordAttempt, reset: resetScore } = useScore()
 
+  const [propertyA, propertyB] = PROPERTY_PAIRS[pairIndex]
+  const hasA = valuesFor(propertyA.key)
+  const hasB = valuesFor(propertyB.key)
   const isChecked = result !== null
+
+  const elements = useMemo(
+    () => STUDENTS.map((s) => ({ ...s, content: <StudentCard student={s} /> })),
+    [],
+  )
+
   const isComplete =
-    round.students.every((s) => placement[s.id] !== 'unplaced') &&
+    STUDENTS.every((s) => placement[s.id] !== 'unplaced') &&
     intersectionInput.trim() !== '' &&
     unionInput.trim() !== ''
 
   const startNewRound = () => {
-    const next = generateRound()
-    setRound(next)
-    setPlacement(emptyPlacement(next.students))
+    setPairIndex((i) => (i + 1) % PROPERTY_PAIRS.length)
+    setPlacement(emptyPlacement())
     setIntersectionInput('')
     setUnionInput('')
     setResult(null)
@@ -68,11 +67,11 @@ function TwoPropertiesTask() {
 
   const handleCheck = () => {
     const feedback = {}
-    round.students.forEach((s) => {
-      feedback[s.id] = placement[s.id] === expectedZone(round, s.id)
+    STUDENTS.forEach((s) => {
+      feedback[s.id] = placement[s.id] === expectedZone(hasA, hasB, s.id)
     })
-    const intersectionCount = round.students.filter((s) => round.hasA[s.id] && round.hasB[s.id]).length
-    const unionCount = round.students.filter((s) => round.hasA[s.id] || round.hasB[s.id]).length
+    const intersectionCount = STUDENTS.filter((s) => hasA[s.id] && hasB[s.id]).length
+    const unionCount = STUDENTS.filter((s) => hasA[s.id] || hasB[s.id]).length
     const intersectionOk = checkAnswer(intersectionInput, intersectionCount)
     const unionOk = checkAnswer(unionInput, unionCount)
     const allCorrect = Object.values(feedback).every(Boolean) && intersectionOk && unionOk
@@ -93,21 +92,33 @@ function TwoPropertiesTask() {
 
       <p className="class-sets-prompt">
         Ez egy 5. osztály névsora. Húzd mindenkit a megfelelő helyre:{' '}
-        <strong>A = {`{${round.propertyA.label}}`}</strong>,{' '}
-        <strong>B = {`{${round.propertyB.label}}`}</strong>, a többiek az osztály többi tanulója.
+        <strong>A = {`{${propertyA.label}}`}</strong>,{' '}
+        <strong>B = {`{${propertyB.label}}`}</strong>, a többiek az osztály többi tanulója.
       </p>
 
-      <VennSets
-        labelA="A"
-        labelB="B"
-        hasBaseSet
-        baseLabel="Az osztály"
-        elements={round.students}
-        placement={placement}
-        onPlacementChange={setPlacement}
-        disabled={isChecked}
-        feedback={isChecked ? result.feedback : null}
-      />
+      <div className="class-sets-layout">
+        <StudentDataSheet
+          students={STUDENTS}
+          columns={[
+            { label: 'A', values: hasA },
+            { label: 'B', values: hasB },
+          ]}
+        />
+
+        <div className="class-sets-diagram-column">
+          <VennSets
+            labelA="A"
+            labelB="B"
+            hasBaseSet
+            baseLabel="Az osztály"
+            elements={elements}
+            placement={placement}
+            onPlacementChange={setPlacement}
+            disabled={isChecked}
+            feedback={isChecked ? result.feedback : null}
+          />
+        </div>
+      </div>
 
       <div className="class-sets-counts">
         <label className={`class-sets-count-field ${isChecked ? (result.intersectionOk ? 'is-correct' : 'is-incorrect') : ''}`}>

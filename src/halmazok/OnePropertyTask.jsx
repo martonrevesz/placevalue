@@ -1,54 +1,46 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import VennSets from '../components/VennSets/VennSets'
-import { pickStudents } from './students'
+import { STUDENTS, PROPERTIES, valuesFor } from './students'
+import StudentDataSheet from './StudentDataSheet'
+import StudentCard from './StudentCard'
 import { useScore } from '../hooks/useScore'
 import ScoreDisplay from '../components/ScoreDisplay/ScoreDisplay'
 import FeedbackPill from '../components/FeedbackPill/FeedbackPill'
 import './ClassSetsTask.css'
 
-const STUDENT_COUNT = 8
-
-// Each property is independently 50/50 per student — an occasional
-// round where everyone (or no one) has the property is a valid, real
-// outcome, not a bug to design around.
-const PROPERTIES = [
-  { key: 'bike', label: 'kerékpárral jár iskolába' },
-  { key: 'english', label: 'angolul tanul' },
-  { key: 'swim', label: 'úszásra jár' },
-  { key: 'football', label: 'focizik' },
-]
-
-function generateRound() {
-  const students = pickStudents(STUDENT_COUNT)
-  const property = PROPERTIES[Math.floor(Math.random() * PROPERTIES.length)]
-  const hasProperty = Object.fromEntries(students.map((s) => [s.id, Math.random() < 0.5]))
-  return { students, property, hasProperty }
-}
-
-function emptyPlacement(students) {
-  return Object.fromEntries(students.map((s) => [s.id, 'unplaced']))
+function emptyPlacement() {
+  return Object.fromEntries(STUDENTS.map((s) => [s.id, 'unplaced']))
 }
 
 function OnePropertyTask() {
-  const [round, setRound] = useState(generateRound)
-  const [placement, setPlacement] = useState(() => emptyPlacement(round.students))
+  // Cycles through the fixed property list — the roster and each
+  // student's real attributes never change, only which property is
+  // being asked about this round.
+  const [propertyIndex, setPropertyIndex] = useState(0)
+  const [placement, setPlacement] = useState(emptyPlacement)
   const [result, setResult] = useState(null)
 
   const { correct, total, recordAttempt, reset: resetScore } = useScore()
 
+  const property = PROPERTIES[propertyIndex]
+  const hasProperty = valuesFor(property.key)
   const isChecked = result !== null
 
+  const elements = useMemo(
+    () => STUDENTS.map((s) => ({ ...s, content: <StudentCard student={s} /> })),
+    [],
+  )
+
   const startNewRound = () => {
-    const next = generateRound()
-    setRound(next)
-    setPlacement(emptyPlacement(next.students))
+    setPropertyIndex((i) => (i + 1) % PROPERTIES.length)
+    setPlacement(emptyPlacement())
     setResult(null)
   }
 
   const handleCheck = () => {
     const feedback = {}
-    round.students.forEach((s) => {
-      const expected = round.hasProperty[s.id] ? 'onlyA' : 'base'
+    STUDENTS.forEach((s) => {
+      const expected = hasProperty[s.id] ? 'onlyA' : 'base'
       feedback[s.id] = placement[s.id] === expected
     })
     const allCorrect = Object.values(feedback).every(Boolean)
@@ -68,20 +60,26 @@ function OnePropertyTask() {
 
       <p className="class-sets-prompt">
         Ez egy 5. osztály névsora. Húzd mindenkit a megfelelő helyre:{' '}
-        <strong>A = {`{${round.property.label}}`}</strong>, a többiek az osztály többi tanulója.
+        <strong>A = {`{${property.label}}`}</strong>, a többiek az osztály többi tanulója.
       </p>
 
-      <VennSets
-        labelA="A"
-        hasSetB={false}
-        hasBaseSet
-        baseLabel="Az osztály"
-        elements={round.students}
-        placement={placement}
-        onPlacementChange={setPlacement}
-        disabled={isChecked}
-        feedback={isChecked ? result.feedback : null}
-      />
+      <div className="class-sets-layout">
+        <StudentDataSheet students={STUDENTS} columns={[{ label: 'A', values: hasProperty }]} />
+
+        <div className="class-sets-diagram-column">
+          <VennSets
+            labelA="A"
+            hasSetB={false}
+            hasBaseSet
+            baseLabel="Az osztály"
+            elements={elements}
+            placement={placement}
+            onPlacementChange={setPlacement}
+            disabled={isChecked}
+            feedback={isChecked ? result.feedback : null}
+          />
+        </div>
+      </div>
 
       <div className="class-sets-actions">
         {!isChecked ? (

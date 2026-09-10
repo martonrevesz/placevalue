@@ -1,21 +1,23 @@
 .score-display {
   display: inline-flex;
+  flex-shrink: 0;
   align-items: baseline;
-  gap: var(--space-2);
-  padding: var(--space-2) var(--space-4);
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-3);
   border-radius: var(--radius-lg);
   background: var(--color-primary-bg);
   border: 1px solid var(--color-primary-border);
+  white-space: nowrap;
 }
 
 .score-display-value {
-  font-size: var(--text-lg);
+  font-size: var(--text-base);
   font-weight: 700;
   font-variant-numeric: tabular-nums;
   color: var(--color-primary);
 }
 
 .score-display-label {
-  font-size: var(--text-sm);
+  font-size: var(--text-xs);
   color: var(--color-ink-muted);
 }

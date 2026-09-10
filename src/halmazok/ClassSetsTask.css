@@ -8,10 +8,10 @@
 
 .class-sets-header {
   width: 100%;
-  max-width: 560px;
+  max-width: 800px;
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: var(--space-3);
 }
@@ -28,15 +28,83 @@
 }
 
 .class-sets-prompt {
-  max-width: 560px;
+  max-width: 800px;
   text-align: center;
   font-size: var(--text-base);
   color: var(--color-ink);
 }
 
+.class-sets-layout {
+  width: 100%;
+  max-width: 800px;
+  display: flex;
+  flex-wrap: wrap-reverse;
+  align-items: flex-start;
+  justify-content: center;
+  gap: var(--space-5);
+}
+
+.class-sets-diagram-column {
+  flex: 1 1 480px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.class-sets-sheet {
+  flex: 0 0 200px;
+  background: var(--color-surface);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+}
+
+.class-sets-sheet-title {
+  margin: 0 0 var(--space-2);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-ink-muted);
+}
+
+.class-sets-sheet-table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.class-sets-sheet-table th,
+.class-sets-sheet-table td {
+  padding: var(--space-1) var(--space-2);
+  border-bottom: 1px solid var(--color-border);
+  font-size: var(--text-sm);
+}
+
+.class-sets-sheet-table th {
+  color: var(--color-primary);
+  font-weight: 600;
+  text-align: left;
+}
+
+.class-sets-sheet-table th:not(:first-child),
+.class-sets-sheet-cell {
+  text-align: center;
+}
+
+.class-sets-sheet-name {
+  white-space: nowrap;
+}
+
+.class-sets-sheet-yes {
+  color: var(--color-success);
+}
+
+.class-sets-sheet-no {
+  color: var(--color-error);
+}
+
 .class-sets-counts {
   width: 100%;
-  max-width: 560px;
+  max-width: 800px;
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
@@ -102,6 +170,61 @@
 .class-sets-actions button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+.student-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.student-card-avatar {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--color-surface);
+}
+
+.student-card-avatar.gender-F {
+  background: #b5568c;
+}
+
+.student-card-avatar.gender-M {
+  background: #2f6f8f;
+}
+
+.student-card-name {
+  font-size: var(--text-sm);
+}
+
+.student-card-props {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 3px;
+}
+
+.student-card-prop {
+  padding: 1px 4px;
+  border-radius: var(--radius-sm);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  background: var(--color-bg);
+  color: var(--color-ink-muted);
+  border: 1px solid var(--color-border);
+}
+
+.student-card-prop.is-active {
+  background: var(--color-primary-bg);
+  color: var(--color-primary);
+  border-color: var(--color-primary-border);
 }
 
 .class-sets-reset-score {

@@ -21,6 +21,11 @@ function pointInRect(x, y, rect) {
  * a disjoint rectangle, so hit-testing is a plain "which rect contains
  * this point" check with no priority/overlap cases to worry about.
  *
+ * Each element is `{ id, label, content? }` — `content` is an optional
+ * React node shown on the chip instead of the plain `label` text (e.g.
+ * a richer card with an avatar and icons), while `label` still names
+ * the element in the ghost ARIA sense and as a fallback.
+ *
  * Controlled: `placement` is `{ [elementId]: 'unplaced' | 'base' |
  * 'onlyA' | 'onlyB' | 'intersection' }`, owned by the caller, updated
  * via `onPlacementChange(nextPlacement)` as soon as a drag ends over a
@@ -142,7 +147,7 @@ function VennSets({
         onPointerUp={endDrag}
         onPointerCancel={endDrag}
       >
-        {element.label}
+        {element.content ?? element.label}
       </div>
     )
   }
@@ -209,7 +214,7 @@ function VennSets({
           className="venn-chip venn-chip-ghost"
           style={{ left: dragPos.x, top: dragPos.y }}
         >
-          {draggedElement.label}
+          {draggedElement.content ?? draggedElement.label}
         </div>
       )}
     </div>
