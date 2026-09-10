@@ -100,14 +100,7 @@ function TwoPropertiesTask() {
       </p>
 
       <div className="class-sets-layout">
-        <GenderPanel
-          gender="F"
-          students={GIRLS}
-          columns={[
-            { label: 'A', values: hasA },
-            { label: 'B', values: hasB },
-          ]}
-        />
+        <GenderPanel gender="F" students={GIRLS} />
 
         <div className="class-sets-diagram-column">
           <VennSets
@@ -123,14 +116,7 @@ function TwoPropertiesTask() {
           />
         </div>
 
-        <GenderPanel
-          gender="M"
-          students={BOYS}
-          columns={[
-            { label: 'A', values: hasA },
-            { label: 'B', values: hasB },
-          ]}
-        />
+        <GenderPanel gender="M" students={BOYS} />
       </div>
 
       <div className="class-sets-counts">

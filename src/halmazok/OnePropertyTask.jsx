@@ -67,7 +67,7 @@ function OnePropertyTask() {
       </p>
 
       <div className="class-sets-layout">
-        <GenderPanel gender="F" students={GIRLS} columns={[{ label: 'A', values: hasProperty }]} />
+        <GenderPanel gender="F" students={GIRLS} />
 
         <div className="class-sets-diagram-column">
           <VennSets
@@ -83,7 +83,7 @@ function OnePropertyTask() {
           />
         </div>
 
-        <GenderPanel gender="M" students={BOYS} columns={[{ label: 'A', values: hasProperty }]} />
+        <GenderPanel gender="M" students={BOYS} />
       </div>
 
       <div className="class-sets-actions">

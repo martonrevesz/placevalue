@@ -48,9 +48,9 @@
   gap: var(--space-5);
 }
 
-@media (min-width: 900px) {
+@media (min-width: 980px) {
   .class-sets-layout {
-    grid-template-columns: 190px 1fr 190px;
+    grid-template-columns: 230px 1fr 230px;
     align-items: start;
   }
 }
@@ -63,20 +63,37 @@
   gap: var(--space-4);
 }
 
+/* One solid block, not a stack of chip-like cards — the whole board
+   is fixed reference material, so it should read as immovable at a
+   glance, not as something that could be picked up like the tray
+   chips below it. */
 .gender-panel {
   width: 100%;
-  max-width: 190px;
+  max-width: 230px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-3);
+  gap: 0;
+  border: 3px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(43, 38, 32, 0.1);
+}
+
+.gender-panel.gender-F {
+  background: rgba(181, 86, 140, 0.06);
+  border-color: #b5568c;
+}
+
+.gender-panel.gender-M {
+  background: rgba(47, 111, 143, 0.06);
+  border-color: #2f6f8f;
 }
 
 .gender-panel-icon {
-  width: 36px;
-  height: 36px;
+  width: 100%;
+  padding: var(--space-2);
   flex-shrink: 0;
-  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -93,42 +110,46 @@
   background: #2f6f8f;
 }
 
-.gender-panel-cards {
+.gender-panel-board {
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
 }
 
-.gender-panel-card {
-  background: var(--color-surface);
-  border: 2px solid var(--color-border);
-  border-radius: var(--radius-md);
+.gender-panel-row {
   padding: var(--space-2) var(--space-3);
+  border-bottom: 1px solid var(--color-border);
 }
 
-.gender-panel-card-name {
-  font-weight: 600;
+.gender-panel-row:last-child {
+  border-bottom: none;
+}
+
+.gender-panel-name {
+  font-weight: 700;
   font-size: var(--text-sm);
   margin-bottom: var(--space-1);
 }
 
-.gender-panel-card-props {
+.gender-panel-facts {
   display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
+  flex-direction: column;
+  gap: 2px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }
 
-.gender-panel-prop {
-  display: inline-flex;
+.gender-panel-fact {
+  display: flex;
   align-items: center;
-  gap: 2px;
+  gap: var(--space-1);
   font-size: var(--text-xs);
   color: var(--color-ink-muted);
 }
 
-.gender-panel-prop-label {
-  font-weight: 600;
+.gender-panel-fact svg {
+  flex-shrink: 0;
 }
 
 .gender-panel-yes {
