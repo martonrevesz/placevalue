@@ -141,23 +141,21 @@
 }
 
 .gender-panel-fact {
-  display: flex;
-  align-items: center;
-  gap: var(--space-1);
+  position: relative;
+  padding-left: 12px;
   font-size: var(--text-xs);
   color: var(--color-ink-muted);
 }
 
-.gender-panel-fact svg {
-  flex-shrink: 0;
-}
-
-.gender-panel-yes {
-  color: var(--color-success);
-}
-
-.gender-panel-no {
-  color: var(--color-error);
+.gender-panel-fact::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.5em;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--color-ink-muted);
 }
 
 .class-sets-counts {

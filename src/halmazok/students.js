@@ -16,33 +16,64 @@ export const STUDENTS = [
   { id: 'Kristóf', label: 'Kristóf', gender: 'M' },
 ]
 
-// Short text badges rather than emoji: flag/pictogram emoji render
-// inconsistently across platforms (Windows shows country flags as
-// literal letter codes, and some glyphs get font-substituted into an
-// unrelated symbol), so plain text is the only look guaranteed to be
-// the same everywhere.
-export const PROPERTIES = [
-  { key: 'bike', label: 'kerékpárral jár iskolába', icon: 'KP' },
-  { key: 'english', label: 'angolul tanul', icon: 'ANG' },
-  { key: 'swim', label: 'úszásra jár', icon: 'ÚSZ' },
-  { key: 'football', label: 'focizik', icon: 'FOCI' },
+// Each attribute is really a choice between named alternatives, not a
+// yes/no flag — a student who "doesn't learn English" learns German,
+// they're never just absent from a trait. Every student picks exactly
+// one option per category.
+export const CATEGORIES = [
+  {
+    key: 'transport',
+    options: [
+      { key: 'bike', label: 'kerékpárral jár iskolába' },
+      { key: 'walk', label: 'gyalog jár iskolába' },
+    ],
+  },
+  {
+    key: 'language',
+    options: [
+      { key: 'english', label: 'angolul tanul' },
+      { key: 'german', label: 'németül tanul' },
+    ],
+  },
+  {
+    key: 'sport',
+    options: [
+      { key: 'swim', label: 'úszásra jár' },
+      { key: 'football', label: 'focizik' },
+    ],
+  },
 ]
 
-// Hand-picked (not random) so every property, and every pair of
-// properties' four regions (A-only/B-only/both/neither), has at least
-// one student — no degenerate all-or-nothing case to stumble into.
+// The flat list of everything a task can test set-membership of — one
+// option from one category (e.g. "learns English"). A OnePropertyTask
+// round tests one of these; a TwoPropertiesTask round tests a pair.
+export const PROPERTIES = CATEGORIES.flatMap((category) =>
+  category.options.map((option) => ({
+    key: option.key,
+    label: option.label,
+    categoryKey: category.key,
+  })),
+)
+
+// Hand-picked (not random): every one of the 8 combinations of the 3
+// categories appears exactly once, so any property (or any pair drawn
+// from two different categories) splits the class exactly in half —
+// no degenerate all-or-nothing case to stumble into.
 export const STUDENT_DATA = {
-  Anna: { bike: true, english: true, swim: false, football: false },
-  Márk: { bike: false, english: true, swim: true, football: true },
-  Luca: { bike: true, english: false, swim: true, football: false },
-  Bálint: { bike: false, english: false, swim: false, football: true },
-  Nóra: { bike: true, english: true, swim: true, football: false },
-  Ábel: { bike: false, english: true, swim: false, football: true },
-  Flóra: { bike: true, english: false, swim: true, football: true },
-  Kristóf: { bike: false, english: false, swim: false, football: false },
+  Anna: { transport: 'bike', language: 'english', sport: 'swim' },
+  Márk: { transport: 'bike', language: 'english', sport: 'football' },
+  Luca: { transport: 'bike', language: 'german', sport: 'swim' },
+  Bálint: { transport: 'bike', language: 'german', sport: 'football' },
+  Nóra: { transport: 'walk', language: 'english', sport: 'swim' },
+  Ábel: { transport: 'walk', language: 'english', sport: 'football' },
+  Flóra: { transport: 'walk', language: 'german', sport: 'swim' },
+  Kristóf: { transport: 'walk', language: 'german', sport: 'football' },
 }
 
-/** `{ [studentId]: boolean }` for one property, from the fixed data sheet. */
+/** `{ [studentId]: boolean }` for one property (an option key), from the fixed data sheet. */
 export function valuesFor(propertyKey) {
-  return Object.fromEntries(STUDENTS.map((s) => [s.id, STUDENT_DATA[s.id][propertyKey]]))
+  const property = PROPERTIES.find((p) => p.key === propertyKey)
+  return Object.fromEntries(
+    STUDENTS.map((s) => [s.id, STUDENT_DATA[s.id][property.categoryKey] === propertyKey]),
+  )
 }

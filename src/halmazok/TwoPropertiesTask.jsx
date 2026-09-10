@@ -12,12 +12,19 @@ import './ClassSetsTask.css'
 const GIRLS = STUDENTS.filter((s) => s.gender === 'F')
 const BOYS = STUDENTS.filter((s) => s.gender === 'M')
 
-// Every pair of properties, in a fixed order — cycled through
-// deterministically rather than picked at random.
+// Every pair of properties from two DIFFERENT categories, in a fixed
+// order — cycled through deterministically rather than picked at
+// random. Pairing two options from the same category (e.g. "bikes" and
+// "walks") would always split the class into a trivial full partition
+// with an empty intersection and an empty "neither" — every category
+// is a closed either/or, so those two would tell the student nothing
+// they couldn't already guess.
 const PROPERTY_PAIRS = []
 for (let i = 0; i < PROPERTIES.length; i++) {
   for (let j = i + 1; j < PROPERTIES.length; j++) {
-    PROPERTY_PAIRS.push([PROPERTIES[i], PROPERTIES[j]])
+    if (PROPERTIES[i].categoryKey !== PROPERTIES[j].categoryKey) {
+      PROPERTY_PAIRS.push([PROPERTIES[i], PROPERTIES[j]])
+    }
   }
 }
 
