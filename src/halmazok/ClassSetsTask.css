@@ -34,39 +34,20 @@
   color: var(--color-ink);
 }
 
-/* A grid, not flex-wrap: with a flexible middle column and two fixed
-   side columns, flex-wrap breaks items onto new rows one at a time as
-   space runs out — the grow-column eats the whole remaining row before
-   the wrap check ever reaches the last side panel, stranding it alone
-   below. Grid lays out all three columns as one unit instead. */
+/* Diagram on top, then both gender panels stacked below it — at every
+   width, not just narrow ones. Each panel is its own horizontal strip
+   (students side by side, wrapping), not a narrow sidebar, so there's
+   no column-width tier to juggle here. */
 .class-sets-layout {
   width: 100%;
-  /* Wide enough that on a large desktop screen the middle column can
-     actually reach VennSets's own 900px cap instead of being squeezed
-     down by the side panels — a starved diagram is what made the
-     intersection zone too small to hold more than 1-2 chips without
-     scrolling. */
-  max-width: 1500px;
-  display: grid;
-  grid-template-columns: 1fr;
-  justify-items: center;
+  max-width: 900px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   gap: var(--space-5);
 }
 
-@media (min-width: 900px) {
-  .class-sets-layout {
-    grid-template-columns: 200px 1fr 200px;
-    align-items: start;
-  }
-}
-
 .class-sets-diagram-column {
-  /* min-width: 0 overrides the grid item default of "never smaller
-     than my content's intrinsic width" — without it, VennSets's own
-     max-width (900px) keeps this column that wide even inside a
-     narrower grid track, pushing the whole layout into horizontal
-     overflow on anything narrower than ~900px. */
-  min-width: 0;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -80,7 +61,6 @@
    chips below it. */
 .gender-panel {
   width: 100%;
-  max-width: 200px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -121,19 +101,25 @@
   background: #2f6f8f;
 }
 
+/* A wrapping row of mini-cards (one per student), not a divided
+   vertical list — the same "students side by side" language as the
+   draggable tray below, just fixed in place. */
 .gender-panel-board {
   width: 100%;
   display: flex;
-  flex-direction: column;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-3);
+  padding: var(--space-3);
 }
 
 .gender-panel-row {
+  flex: 0 1 160px;
+  min-width: 140px;
   padding: var(--space-2) var(--space-3);
-  border-bottom: 1px solid var(--color-border);
-}
-
-.gender-panel-row:last-child {
-  border-bottom: none;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
 }
 
 .gender-panel-name {

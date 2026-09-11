@@ -15,7 +15,12 @@
   position: relative;
   width: 100%;
   max-width: 900px;
-  aspect-ratio: 1.75 / 1;
+  /* Was 1.75/1 — combined with the circles' own 52%-width/50%-height
+     box that came out close to 1.8:1, a visibly "pressed" flat oval.
+     4/3 renders the circles closer to 1.4:1, rounder, and as a side
+     effect gives every zone band more absolute height to hold chips
+     without scrolling. */
+  aspect-ratio: 4 / 3;
 }
 
 /* Purely decorative — the actual "base only" drop target is
