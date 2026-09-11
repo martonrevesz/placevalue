@@ -12,20 +12,65 @@ import './ClassSetsTask.css'
 const GIRLS = STUDENTS.filter((s) => s.gender === 'F')
 const BOYS = STUDENTS.filter((s) => s.gender === 'M')
 
-// Every pair of properties from two DIFFERENT categories, in a fixed
-// order — cycled through deterministically rather than picked at
-// random. Pairing two options from the same category (e.g. "bikes" and
-// "walks") would always split the class into a trivial full partition
-// with an empty intersection and an empty "neither" — every category
-// is a closed either/or, so those two would tell the student nothing
-// they couldn't already guess.
-const PROPERTY_PAIRS = []
-for (let i = 0; i < PROPERTIES.length; i++) {
-  for (let j = i + 1; j < PROPERTIES.length; j++) {
-    if (PROPERTIES[i].categoryKey !== PROPERTIES[j].categoryKey) {
-      PROPERTY_PAIRS.push([PROPERTIES[i], PROPERTIES[j]])
-    }
+function pairOf(keyA, keyB) {
+  return [PROPERTIES.find((p) => p.key === keyA), PROPERTIES.find((p) => p.key === keyB)]
+}
+
+// Every pair of properties, hand-ordered (not generated/shuffled) so
+// each kind of Venn relationship shows up deliberately rather than by
+// chance: most rounds split into four non-empty regions, but a few are
+// worth meeting on purpose —
+//  - "bike"/"walk", "english"/"german", "swim"/"football": the two
+//    alternatives of one category, always a full partition (empty
+//    intersection AND empty "neither", since every student picks
+//    exactly one option).
+//  - "walk"/"german": every German speaker also walks (§students.js),
+//    so "B only" (German but not walking) is empty — a strict subset,
+//    not a partition.
+//  - "bike"/"english": the mirror case — every biker also learns
+//    English, so "A only" (bike but not English) is empty.
+const PROPERTY_PAIRS = [
+  pairOf('bike', 'swim'),
+  pairOf('bike', 'walk'),
+  pairOf('bike', 'football'),
+  pairOf('walk', 'swim'),
+  pairOf('walk', 'german'),
+  pairOf('walk', 'football'),
+  pairOf('english', 'german'),
+  pairOf('bike', 'english'),
+  pairOf('bike', 'german'),
+  pairOf('walk', 'english'),
+  pairOf('english', 'swim'),
+  pairOf('english', 'football'),
+  pairOf('german', 'swim'),
+  pairOf('german', 'football'),
+  pairOf('swim', 'football'),
+]
+
+// Only worth a callout when the round hits one of the special Venn
+// shapes (see the PROPERTY_PAIRS comment above) — an ordinary round
+// where all four regions are just "some, but not all or none" doesn't
+// need a note, so this returns null and the feedback area stays quiet.
+function describeSpecialCase({ interCount, onlyACount, onlyBCount, baseCount, labelA, labelB }) {
+  if (interCount === 0 && baseCount === 0) {
+    return 'Ez a két tulajdonság kizárja egymást: senki sem teljesíti mindkettőt, de mindenki teljesíti legalább az egyiket.'
   }
+  if (onlyACount === 0 && onlyBCount === 0) {
+    return 'Ez a két tulajdonság mindig együtt jár: aki teljesíti az egyiket, az a másikat is teljesíti.'
+  }
+  if (onlyACount === 0) {
+    return `Mindenki, aki ${labelA}, az ${labelB} is — tehát A részhalmaza B-nek.`
+  }
+  if (onlyBCount === 0) {
+    return `Mindenki, aki ${labelB}, az ${labelA} is — tehát B részhalmaza A-nak.`
+  }
+  if (interCount === 0) {
+    return 'Ennek a két tulajdonságnak nincs közös teljesítője: senki sem felel meg mindkettőnek egyszerre.'
+  }
+  if (baseCount === 0) {
+    return 'A két tulajdonság együtt mindenkit lefed: mindenki teljesíti legalább az egyiket.'
+  }
+  return null
 }
 
 function expectedZone(hasA, hasB, id) {
@@ -81,12 +126,23 @@ function TwoPropertiesTask() {
       feedback[s.id] = placement[s.id] === expectedZone(hasA, hasB, s.id)
     })
     const intersectionCount = STUDENTS.filter((s) => hasA[s.id] && hasB[s.id]).length
-    const unionCount = STUDENTS.filter((s) => hasA[s.id] || hasB[s.id]).length
+    const onlyACount = STUDENTS.filter((s) => hasA[s.id] && !hasB[s.id]).length
+    const onlyBCount = STUDENTS.filter((s) => !hasA[s.id] && hasB[s.id]).length
+    const baseCount = STUDENTS.length - intersectionCount - onlyACount - onlyBCount
+    const unionCount = intersectionCount + onlyACount + onlyBCount
     const intersectionOk = checkAnswer(intersectionInput, intersectionCount)
     const unionOk = checkAnswer(unionInput, unionCount)
     const allCorrect = Object.values(feedback).every(Boolean) && intersectionOk && unionOk
+    const specialCase = describeSpecialCase({
+      interCount: intersectionCount,
+      onlyACount,
+      onlyBCount,
+      baseCount,
+      labelA: propertyA.label,
+      labelB: propertyB.label,
+    })
 
-    setResult({ feedback, intersectionOk, unionOk, intersectionCount, unionCount, allCorrect })
+    setResult({ feedback, intersectionOk, unionOk, intersectionCount, unionCount, allCorrect, specialCase })
     recordAttempt(allCorrect)
   }
 
@@ -172,6 +228,12 @@ function TwoPropertiesTask() {
           </FeedbackPill>
         )}
       </div>
+
+      {isChecked && result.specialCase && (
+        <p className="class-sets-observation">
+          <strong>Megfigyelés:</strong> {result.specialCase}
+        </p>
+      )}
 
       {total > 0 && (
         <button type="button" className="class-sets-reset-score" onClick={resetScore}>

@@ -55,17 +55,24 @@ export const PROPERTIES = CATEGORIES.flatMap((category) =>
   })),
 )
 
-// Hand-picked (not random): every one of the 8 combinations of the 3
-// categories appears exactly once, so any property (or any pair drawn
-// from two different categories) splits the class exactly in half —
-// no degenerate all-or-nothing case to stumble into.
+// Hand-picked (not random), deliberately NOT a clean bijection over the
+// 8 possible combinations: every biker also learns English (so
+// "bikes" is a strict subset of "learns English"), and every German
+// speaker also walks to school (so "learns German" is a strict subset
+// of "walks") — real classes have these lopsided, one-implies-the-
+// other cases too, not just neatly overlapping or disjoint ones,  and
+// TwoPropertiesTask deliberately schedules a round on each so students
+// meet an "A only" / "B only" that's empty, not just the usual four
+// non-empty regions. Sport stays independent of transport (still an
+// even 2/2/2/2 split either way) and isn't correlated with gender —
+// not every girl swims, not every boy plays football.
 export const STUDENT_DATA = {
-  Anna: { transport: 'bike', language: 'english', sport: 'swim' },
-  Márk: { transport: 'bike', language: 'english', sport: 'football' },
-  Luca: { transport: 'bike', language: 'german', sport: 'swim' },
-  Bálint: { transport: 'bike', language: 'german', sport: 'football' },
+  Anna: { transport: 'bike', language: 'english', sport: 'football' },
+  Márk: { transport: 'bike', language: 'english', sport: 'swim' },
+  Luca: { transport: 'bike', language: 'english', sport: 'swim' },
+  Bálint: { transport: 'bike', language: 'english', sport: 'football' },
   Nóra: { transport: 'walk', language: 'english', sport: 'swim' },
-  Ábel: { transport: 'walk', language: 'english', sport: 'football' },
+  Ábel: { transport: 'walk', language: 'german', sport: 'football' },
   Flóra: { transport: 'walk', language: 'german', sport: 'swim' },
   Kristóf: { transport: 'walk', language: 'german', sport: 'football' },
 }
