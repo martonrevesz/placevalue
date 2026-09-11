@@ -164,7 +164,12 @@
   left: 4%;
   width: 92%;
   top: 60%;
-  height: 34%;
+  /* Was 34% — sized for the old 1.75:1 canvas. The switch to a 4:3
+     canvas (rounder circles) made every percentage taller in absolute
+     pixels, and this zone doesn't need nearly as much: 26% keeps it
+     close to its original ~175px height instead of ballooning to
+     ~230px of mostly-empty dashed box. */
+  height: 26%;
   /* Its own dashed-border identity, matching the tray — without this
      it's just blank background inside .venn-base and reads as unused
      space rather than a real drop target. */

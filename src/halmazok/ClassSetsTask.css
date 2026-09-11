@@ -34,10 +34,10 @@
   color: var(--color-ink);
 }
 
-/* Diagram on top, then both gender panels stacked below it — at every
-   width, not just narrow ones. Each panel is its own horizontal strip
-   (students side by side, wrapping), not a narrow sidebar, so there's
-   no column-width tier to juggle here. */
+/* Tablet and below: diagram on top, then both gender panels stacked
+   below it as horizontal strips (students side by side, wrapping) —
+   see the @media block further down for the desktop tier, which
+   switches back to narrow vertical sidebars flanking the diagram. */
 .class-sets-layout {
   width: 100%;
   max-width: 900px;
@@ -47,7 +47,25 @@
   gap: var(--space-5);
 }
 
+@media (min-width: 1200px) {
+  .class-sets-layout {
+    max-width: 1500px;
+    display: grid;
+    grid-template-columns: 200px 1fr 200px;
+    grid-template-areas: 'girls diagram boys';
+    align-items: start;
+    justify-items: center;
+  }
+}
+
 .class-sets-diagram-column {
+  grid-area: diagram;
+  /* min-width: 0 overrides the grid item default of "never smaller
+     than my content's intrinsic width" — without it, VennSets's own
+     max-width (900px) keeps this column that wide even inside a
+     narrower grid track at the desktop tier, pushing the whole layout
+     into horizontal overflow. */
+  min-width: 0;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -72,11 +90,13 @@
 }
 
 .gender-panel.gender-F {
+  grid-area: girls;
   background: rgba(181, 86, 140, 0.06);
   border-color: #b5568c;
 }
 
 .gender-panel.gender-M {
+  grid-area: boys;
   background: rgba(47, 111, 143, 0.06);
   border-color: #2f6f8f;
 }
@@ -120,6 +140,33 @@
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
+}
+
+/* Desktop sidebar tier: back to a divided vertical list (one row per
+   student, full width) instead of wrapping mini-cards — a narrow
+   200px column doesn't have room to fit more than one card per row
+   anyway, so the card framing just adds visual noise. */
+@media (min-width: 1200px) {
+  .gender-panel-board {
+    flex-direction: column;
+    flex-wrap: nowrap;
+    gap: 0;
+    padding: 0;
+  }
+
+  .gender-panel-row {
+    flex: none;
+    width: 100%;
+    min-width: 0;
+    background: none;
+    border: none;
+    border-radius: 0;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .gender-panel-row:last-child {
+    border-bottom: none;
+  }
 }
 
 .gender-panel-name {
