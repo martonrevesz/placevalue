@@ -204,10 +204,15 @@
 
 .class-sets-counts {
   width: 100%;
-  max-width: 800px;
+  /* Wider than the 800px used elsewhere on this page — the two
+     questions' full label text needs close to 830px combined to sit
+     on one line, and this section has no other reason to stay narrow. */
+  max-width: 1000px;
   display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-3) var(--space-6);
 }
 
 .class-sets-count-field {
