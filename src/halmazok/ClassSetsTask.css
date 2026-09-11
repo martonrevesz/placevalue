@@ -41,16 +41,21 @@
    below. Grid lays out all three columns as one unit instead. */
 .class-sets-layout {
   width: 100%;
-  max-width: 1080px;
+  /* Wide enough that on a large desktop screen the middle column can
+     actually reach VennSets's own 900px cap instead of being squeezed
+     down by the side panels — a starved diagram is what made the
+     intersection zone too small to hold more than 1-2 chips without
+     scrolling. */
+  max-width: 1500px;
   display: grid;
   grid-template-columns: 1fr;
   justify-items: center;
   gap: var(--space-5);
 }
 
-@media (min-width: 980px) {
+@media (min-width: 900px) {
   .class-sets-layout {
-    grid-template-columns: 230px 1fr 230px;
+    grid-template-columns: 200px 1fr 200px;
     align-items: start;
   }
 }
@@ -75,7 +80,7 @@
    chips below it. */
 .gender-panel {
   width: 100%;
-  max-width: 230px;
+  max-width: 200px;
   display: flex;
   flex-direction: column;
   align-items: center;
