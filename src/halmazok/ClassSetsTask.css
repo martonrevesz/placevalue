@@ -56,6 +56,12 @@
 }
 
 .class-sets-diagram-column {
+  /* min-width: 0 overrides the grid item default of "never smaller
+     than my content's intrinsic width" — without it, VennSets's own
+     max-width (900px) keeps this column that wide even inside a
+     narrower grid track, pushing the whole layout into horizontal
+     overflow on anything narrower than ~900px. */
+  min-width: 0;
   width: 100%;
   display: flex;
   flex-direction: column;
