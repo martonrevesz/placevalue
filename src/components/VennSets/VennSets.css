@@ -17,11 +17,11 @@
   max-width: 900px;
   /* Was 1.75/1 — combined with the circles' own 52%-width/50%-height
      box that came out close to 1.8:1, a visibly "pressed" flat oval.
-     1.5/1 renders the circles closer to 1.56:1, noticeably rounder,
-     without stretching the canvas as much as 4/3 did (which left the
-     base-only zone below either oversized or, once trimmed back down,
-     surrounded by a dead unused gap). */
-  aspect-ratio: 1.5 / 1;
+     4/3 renders the circles closer to 1.4:1. The base-only zone below
+     grows taller too as a side effect (see .venn-base-zone) — kept
+     large on purpose, filling the extra room, rather than shrinking
+     the circles back down to avoid it. */
+  aspect-ratio: 4 / 3;
 }
 
 /* Purely decorative — the actual "base only" drop target is
