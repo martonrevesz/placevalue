@@ -5,14 +5,17 @@
 // invented names to read as one consistent (fictional) class rather
 // than a fresh cast each time. Also a fresh, invented roster — no
 // overlap with any specific textbook's named characters.
+// Girls first, then boys — matching the gender panels' own order, so
+// the draggable tray reads as "the same order as the panels above it"
+// rather than an arbitrary shuffle.
 export const STUDENTS = [
   { id: 'Anna', label: 'Anna', gender: 'F' },
-  { id: 'Márk', label: 'Márk', gender: 'M' },
   { id: 'Luca', label: 'Luca', gender: 'F' },
-  { id: 'Bálint', label: 'Bálint', gender: 'M' },
   { id: 'Nóra', label: 'Nóra', gender: 'F' },
-  { id: 'Ábel', label: 'Ábel', gender: 'M' },
   { id: 'Flóra', label: 'Flóra', gender: 'F' },
+  { id: 'Márk', label: 'Márk', gender: 'M' },
+  { id: 'Bálint', label: 'Bálint', gender: 'M' },
+  { id: 'Ábel', label: 'Ábel', gender: 'M' },
   { id: 'Kristóf', label: 'Kristóf', gender: 'M' },
 ]
 

@@ -15,13 +15,13 @@
   position: relative;
   width: 100%;
   max-width: 900px;
-  /* Was 1.75/1 — combined with the circles' own 52%-width/50%-height
-     box that came out close to 1.8:1, a visibly "pressed" flat oval.
-     4/3 renders the circles closer to 1.4:1. The base-only zone below
-     grows taller too as a side effect (see .venn-base-zone) — kept
-     large on purpose, filling the extra room, rather than shrinking
-     the circles back down to avoid it. */
-  aspect-ratio: 4 / 3;
+  /* A circle's actual on-screen size depends only on the canvas's
+     WIDTH and the circle's own height percentage — not on this
+     aspect-ratio, which only controls how tall the canvas itself is.
+     1.75/1 keeps the whole box compact; .venn-circle's height is set
+     higher below to land on the exact same pixel size it had at the
+     old 4/3 canvas, so the circles are neither bigger nor flatter. */
+  aspect-ratio: 1.75 / 1;
 }
 
 /* Purely decorative — the actual "base only" drop target is
@@ -49,7 +49,10 @@
 .venn-circle {
   position: absolute;
   top: 8%;
-  height: 50%;
+  /* 66% of this shorter (1.75/1) canvas lands on the same absolute
+     pixel height the circle had at 50% of the old 4/3 canvas — same
+     size and roundness, just repositioned onto a more compact box. */
+  height: 66%;
   width: 50%;
   border-radius: 50%;
   pointer-events: none;
@@ -80,7 +83,7 @@
 
 .venn-set-label {
   position: absolute;
-  top: 10%;
+  top: 11%;
   font-weight: 700;
   font-size: var(--text-base);
   pointer-events: none;
@@ -101,14 +104,14 @@
 }
 
 .venn-zone {
-  /* Inset well within the circle's height (which spans 8%-54%), not
+  /* Inset well within the circle's height (which spans 8%-74%), not
      just far enough to clear the top label — a circle narrows toward
      both its top AND bottom edge, so content centered across the full
      height ends up visually sitting on the bottom curve, not inside
      it. This band sits in the circle's widest, safely-inside middle. */
   position: absolute;
-  top: 16%;
-  height: 36%;
+  top: 19%;
+  height: 48%;
   display: flex;
   flex-wrap: wrap;
   align-content: center;
@@ -164,12 +167,14 @@
 .venn-base-zone {
   left: 4%;
   width: 92%;
-  top: 60%;
-  /* Fills nearly all the remaining space below the circles (a slim 3%
-     margin at the very bottom) rather than stopping partway and
-     leaving a dead, unused gap between the dashed box and the outer
-     border. */
-  height: 37%;
+  /* Right after the circles (a small 2% gap), same as before — the
+     canvas itself is compact now, so this no longer leaves a large
+     leftover gap either above or below the zone. */
+  top: 76%;
+  /* One row of chips' worth of height — this zone doesn't need to
+     match the lens zones' size, it just needs to be tall enough to be
+     an easy, unambiguous drop target. */
+  height: 14%;
   /* Its own dashed-border identity, matching the tray — without this
      it's just blank background inside .venn-base and reads as unused
      space rather than a real drop target. */

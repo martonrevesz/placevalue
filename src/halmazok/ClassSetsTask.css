@@ -2,8 +2,8 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-5);
-  padding: var(--space-5) var(--space-4) var(--space-8);
+  gap: var(--space-4);
+  padding: var(--space-4) var(--space-4);
 }
 
 .class-sets-header {
@@ -70,7 +70,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-4);
+  gap: var(--space-3);
 }
 
 /* One solid block, not a stack of chip-like cards — the whole board
