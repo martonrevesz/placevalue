@@ -173,8 +173,10 @@
   top: 76%;
   /* One row of chips' worth of height — this zone doesn't need to
      match the lens zones' size, it just needs to be tall enough to be
-     an easy, unambiguous drop target. */
-  height: 14%;
+     an easy, unambiguous drop target. 14% was a couple pixels too
+     short for one row plus padding, triggering a scrollbar even with
+     a single chip in it. */
+  height: 16%;
   /* Its own dashed-border identity, matching the tray — without this
      it's just blank background inside .venn-base and reads as unused
      space rather than a real drop target. */
