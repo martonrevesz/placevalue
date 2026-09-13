@@ -3,6 +3,7 @@ import VennSets from '../components/VennSets/VennSets'
 import { STUDENTS, PROPERTIES, valuesFor } from './students'
 import GenderPanel from './GenderPanel'
 import StudentCard from './StudentCard'
+import { checkAnswer } from '../utils/checkAnswer'
 import { useScore } from '../hooks/useScore'
 import ScoreDisplay from '../components/ScoreDisplay/ScoreDisplay'
 import FeedbackPill from '../components/FeedbackPill/FeedbackPill'
@@ -21,6 +22,8 @@ function OnePropertyTask() {
   // being asked about this round.
   const [propertyIndex, setPropertyIndex] = useState(0)
   const [placement, setPlacement] = useState(emptyPlacement)
+  const [aInput, setAInput] = useState('')
+  const [complementInput, setComplementInput] = useState('')
   const [result, setResult] = useState(null)
 
   const { correct, total, recordAttempt, reset: resetScore } = useScore()
@@ -34,9 +37,16 @@ function OnePropertyTask() {
     [],
   )
 
+  const isComplete =
+    STUDENTS.every((s) => placement[s.id] !== 'unplaced') &&
+    aInput.trim() !== '' &&
+    complementInput.trim() !== ''
+
   const startNewRound = () => {
     setPropertyIndex((i) => (i + 1) % PROPERTIES.length)
     setPlacement(emptyPlacement())
+    setAInput('')
+    setComplementInput('')
     setResult(null)
   }
 
@@ -46,8 +56,13 @@ function OnePropertyTask() {
       const expected = hasProperty[s.id] ? 'onlyA' : 'base'
       feedback[s.id] = placement[s.id] === expected
     })
-    const allCorrect = Object.values(feedback).every(Boolean)
-    setResult({ feedback, allCorrect })
+    const aCount = STUDENTS.filter((s) => hasProperty[s.id]).length
+    const complementCount = STUDENTS.length - aCount
+    const aOk = checkAnswer(aInput, aCount)
+    const complementOk = checkAnswer(complementInput, complementCount)
+    const allCorrect = Object.values(feedback).every(Boolean) && aOk && complementOk
+
+    setResult({ feedback, aOk, complementOk, aCount, complementCount, allCorrect })
     recordAttempt(allCorrect)
   }
 
@@ -85,9 +100,38 @@ function OnePropertyTask() {
         <GenderPanel gender="M" students={BOYS} />
       </div>
 
+      <div className="class-sets-counts">
+        <label className={`class-sets-count-field ${isChecked ? (result.aOk ? 'is-correct' : 'is-incorrect') : ''}`}>
+          Hány gyerek van az A halmazban?
+          <input
+            type="text"
+            inputMode="numeric"
+            value={aInput}
+            onChange={(e) => setAInput(e.target.value)}
+            disabled={isChecked}
+          />
+          {isChecked && !result.aOk && <span className="class-sets-count-hint">helyes: {result.aCount}</span>}
+        </label>
+        <label
+          className={`class-sets-count-field ${isChecked ? (result.complementOk ? 'is-correct' : 'is-incorrect') : ''}`}
+        >
+          Hány gyerek van az A halmazon kívül (a kiegészítő halmazban)?
+          <input
+            type="text"
+            inputMode="numeric"
+            value={complementInput}
+            onChange={(e) => setComplementInput(e.target.value)}
+            disabled={isChecked}
+          />
+          {isChecked && !result.complementOk && (
+            <span className="class-sets-count-hint">helyes: {result.complementCount}</span>
+          )}
+        </label>
+      </div>
+
       <div className="class-sets-actions">
         {!isChecked ? (
-          <button type="button" onClick={handleCheck}>
+          <button type="button" onClick={handleCheck} disabled={!isComplete}>
             Ellenőrzés
           </button>
         ) : (
