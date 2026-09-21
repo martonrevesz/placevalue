@@ -191,10 +191,6 @@ function App() {
               szolgáltatásokat, kizárólag az órán tanult anyag mélyebb, önálló gyakorlását segíti.
             </li>
             <li>
-              A feladatok saját fejlesztésű, egyedi tartalmak: nem tartalmaznak szó szerint átvett
-              tankönyvi vagy munkafüzeti szöveget, ábrát vagy képet.
-            </li>
-            <li>
               Az oldal független a tankönyvkiadóktól és más oktatási platformoktól, azokkal semmilyen
               kapcsolatban nem áll, nem hivatalos kiadvány, és nem szolgál kereskedelmi célt.
             </li>
@@ -208,8 +204,7 @@ function App() {
             </li>
             <li>
               Ha bármelyik feladattal kapcsolatban kifogás merülne fel, kérjük, jelezze a{' '}
-              <a href="mailto:revesz.marton@zdo.hu">revesz.marton@zdo.hu</a> címen, és haladéktalanul
-              intézkedünk.
+              <a href="mailto:revesz.marton@zdo.hu">revesz.marton@zdo.hu</a> címen.
             </li>
           </ul>
         </div>
