@@ -17,6 +17,7 @@ import OnePropertyTask from './halmazok/OnePropertyTask'
 import TwoPropertiesTask from './halmazok/TwoPropertiesTask'
 import HalmazokHome from './halmazok/HalmazokHome'
 import HungarianWordsDemo from './dev/HungarianWordsDemo'
+import { WarningIcon } from './components/icons/FeedbackIcons'
 import './App.css'
 
 const TASKS = [
@@ -162,6 +163,41 @@ function App() {
       <header>
         <h1>Matematika gyakorló feladatok</h1>
       </header>
+
+      <div className="disclaimer">
+        <WarningIcon size={22} className="disclaimer-icon" />
+        <div>
+          <p className="disclaimer-title">Fontos tudnivalók</p>
+          <ul>
+            <li>
+              Ez az alkalmazás kizárólag a Zugliget Általános Iskola felső tagozatos diákjai számára
+              készült, saját, egyéni gyakorlás céljára. Hamarosan bejelentkezéshez kötjük a hozzáférést —
+              addig is kérünk mindenkit, hogy a linket ne ossza meg az iskolán kívül senkivel.
+            </li>
+            <li>
+              A segédanyag nem helyettesíti a tankönyveket, munkafüzeteket vagy egyéb oktatási
+              szolgáltatásokat, kizárólag az órán tanult anyag mélyebb, önálló gyakorlását segíti.
+            </li>
+            <li>
+              A feladatok saját fejlesztésű, egyedi tartalmak: nem tartalmaznak szó szerint átvett
+              tankönyvi vagy munkafüzeti szöveget, ábrát vagy képet. Stílusukban a NAT2020 kerettantervhez
+              és az órai tananyaghoz igazodnak, de attól függetlenül, önállóan készültek.
+            </li>
+            <li>
+              Az oldal független a tankönyvkiadóktól és más oktatási platformoktól, azokkal semmilyen
+              kapcsolatban nem áll, nem hivatalos kiadvány, és nem szolgál kereskedelmi célt.
+            </li>
+            <li>
+              Az alkalmazás díjmentes, és jelenlegi állapotában ("as is") érhető el; a benne előforduló
+              esetleges hibákért felelősséget nem vállalunk.
+            </li>
+            <li>
+              Az alkalmazás nem gyűjt és nem tárol személyes adatot — a megjelenő pontszám csak ideiglenes,
+              az oldal frissítésekor törlődik.
+            </li>
+          </ul>
+        </div>
+      </div>
 
       <div className="task-nav">
         <button type="button" className="task-nav-item" onClick={() => setSubject('placevalue')}>
