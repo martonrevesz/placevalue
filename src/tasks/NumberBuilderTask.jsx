@@ -104,7 +104,7 @@ function NumberBuilderTask() {
       </section>
 
       <p className="number-builder-prompt">
-        Ennyi számkártyád van: <strong>{digits.join(', ')}</strong>. Rakd ki mind a{' '}
+        Ezek a számkártyáid vannak: <strong>{digits.join(', ')}</strong>. Rakd ki az összes{' '}
         <strong>{digitCount}</strong>-jegyű számot, amit ezekből — mindegyik kártyát pontosan egyszer
         felhasználva — ki lehet rakni! Egy számban egy kártya nem szerepelhet kétszer, és a szám nem
         kezdődhet 0-val.
