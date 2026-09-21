@@ -148,9 +148,17 @@ function PermutationTree({ digits, noLeadingZero = true, values, onChange, disab
   // this, auto-advancing selection (see `place`) only moved the blue
   // "selected" ring, while the native focus outline stayed stuck on
   // whichever box was last actually clicked. That left two different
-  // boxes looking highlighted at once, in two different styles.
+  // boxes looking highlighted at once, in two different styles. When
+  // selection clears entirely (a number just got finished, or Escape),
+  // there's no new box to focus — but the old one still has real
+  // browser focus unless something explicitly gives it up, so blur it
+  // instead of leaving a stray native ring on a box that isn't selected.
   useEffect(() => {
-    if (!selectedKey) return
+    if (!selectedKey) {
+      const active = document.activeElement
+      if (active?.hasAttribute?.('data-ptree-key')) active.blur()
+      return
+    }
     document.querySelector(`[data-ptree-key="${selectedKey}"]`)?.focus({ preventScroll: true })
   }, [selectedKey])
 
