@@ -171,6 +171,9 @@ function App() {
         <button type="button" className="task-nav-item" onClick={() => setSubject('halmazok')}>
           Halmazok
         </button>
+        <a className="task-nav-item" href="?view=number-builder">
+          SzámAlkotó
+        </a>
       </div>
 
       <div className="disclaimer">
