@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { ancestorKeys, buildLevels, computeNodeRows, findNextEntryPoint, siblingKeys } from '../../utils/permutationTree'
+import { ancestorKeys, buildLevels, computeNodeRows, siblingKeys } from '../../utils/permutationTree'
 import './PermutationTree.css'
 
 // Pixel geometry for the computed layout below — a node's row (from
@@ -41,12 +41,10 @@ const BOX_SIZE = 40
  * changing an ancestor invalidates its descendants, clears everything
  * below it too). After a placement, selection jumps to that box's own
  * first child — the next digit of the *same* number — not sideways to
- * a sibling. Finishing a whole number instead jumps to the next
- * incomplete number's first still-*empty* box (see
- * `findNextEntryPoint`), which usually isn't that number's first
- * digit either, since neighboring numbers share their early digits.
- * Together this lets a keyboard-only student fill the entire tree
- * digit by digit without ever touching the mouse.
+ * a sibling, letting a keyboard-only student type one whole number in
+ * a row. Finishing a number (the leaf) clears selection rather than
+ * jumping into a different number — which one to build next is the
+ * student's own choice, not something to autopilot into.
  */
 function PermutationTree({ digits, noLeadingZero = true, values, onChange, disabled = false }) {
   const [selectedKey, setSelectedKey] = useState(null)
@@ -85,23 +83,17 @@ function PermutationTree({ digits, noLeadingZero = true, values, onChange, disab
         if (key !== pathKey && key.startsWith(`${pathKey}.`)) delete next[key]
       })
       onChange(next)
+      // Advance into this box's own first child — the next digit of
+      // the SAME number — rather than leaving selection where a
+      // default tab order would take it (down to the next sibling,
+      // i.e. the first digit of a different number entirely). Once a
+      // whole number is finished, selection clears instead of jumping
+      // into the next one — the student picks where to continue.
       const depth = pathKey.split('.').length - 1
-      if (depth + 1 < digits.length) {
-        // Advance into this box's own first child — the next digit of
-        // the SAME number — rather than leaving selection where a
-        // default tab order would take it (down to the next sibling,
-        // i.e. the first digit of a different number entirely).
-        setSelectedKey(`${pathKey}.0`)
-      } else {
-        // Just finished a whole number — jump to the next incomplete
-        // one's first still-empty box, which is almost never *its*
-        // first digit either, since it shares early digits with
-        // whatever's already filled (see findNextEntryPoint).
-        setSelectedKey(findNextEntryPoint(levels, next, pathKey))
-      }
+      setSelectedKey(depth + 1 < digits.length ? `${pathKey}.0` : null)
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [disabled, values, digits, noLeadingZero, onChange, levels],
+    [disabled, values, digits, noLeadingZero, onChange],
   )
 
   const clear = (pathKey) => {

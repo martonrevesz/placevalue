@@ -96,26 +96,3 @@ export function countTotalBoxes(digits, noLeadingZero) {
   const levels = buildLevels(digits, noLeadingZero)
   return levels.reduce((sum, keys) => sum + keys.length, 0)
 }
-
-/**
- * Where to put keyboard/entry focus right after finishing a number
- * (filling `afterLeafKey`): the first still-empty box on the next
- * not-yet-complete number, scanning forward through the leaves (and
- * wrapping around). A "number" shares its early digits with whichever
- * neighbors branch off the same ancestors, so this is almost never the
- * next number's *first* digit — e.g. after 390, the next leaf is
- * 0.1.0 (940), but box "0" (the shared leading 9) is already filled,
- * so the real entry point is "0.1" (the second digit). Returns `null`
- * once every number is complete.
- */
-export function findNextEntryPoint(levels, values, afterLeafKey) {
-  const leafKeys = levels[levels.length - 1] ?? []
-  const startIndex = leafKeys.indexOf(afterLeafKey)
-  for (let offset = 1; offset <= leafKeys.length; offset++) {
-    const candidate = leafKeys[(startIndex + offset) % leafKeys.length]
-    const chain = [...ancestorKeys(candidate), candidate]
-    const firstEmpty = chain.find((key) => !values[key])
-    if (firstEmpty) return firstEmpty
-  }
-  return null
-}
