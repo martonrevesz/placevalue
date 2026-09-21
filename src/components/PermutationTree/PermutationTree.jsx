@@ -19,7 +19,11 @@ import './PermutationTree.css'
 // computeNodeRows — bottom-up centering so a path's start and end
 // stay close together) always drives whichever axis ISN'T depth.
 const DEPTH_SIZE = 88
-const LEAF_SIZE = 56
+// Kept tight enough that a full 4-digit tree (up to 24 leaves) fits
+// most desktop widths without the canvas needing to scroll — a wider
+// value looked nicer for the smaller 3-digit case, but wasn't worth a
+// scrollbar showing up on ordinary screens for the 4-digit one.
+const LEAF_SIZE = 46
 const BOX_SIZE = 40
 
 /**
