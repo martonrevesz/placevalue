@@ -203,6 +203,11 @@ function App() {
               Az alkalmazás nem gyűjt és nem tárol személyes adatot — a megjelenő pontszám csak ideiglenes,
               az oldal frissítésekor törlődik.
             </li>
+            <li>
+              Ha bármelyik feladattal kapcsolatban kifogás merülne fel, kérjük, jelezze a{' '}
+              <a href="mailto:revesz.marton@zdo.hu">revesz.marton@zdo.hu</a> címen, és haladéktalanul
+              intézkedünk.
+            </li>
           </ul>
         </div>
       </div>

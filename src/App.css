@@ -50,6 +50,10 @@
   color: var(--color-ink);
 }
 
+.disclaimer a {
+  color: var(--color-primary);
+}
+
 .task-nav {
   list-style: none;
   display: flex;
