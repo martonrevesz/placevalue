@@ -1,5 +1,11 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { ancestorKeys, buildLevels, computeNodeRows, siblingKeys } from '../../utils/permutationTree'
+import {
+  ancestorKeys,
+  buildLevels,
+  computeNodeRows,
+  findNextEntryPoint,
+  siblingKeys,
+} from '../../utils/permutationTree'
 import './PermutationTree.css'
 
 // Pixel geometry for the computed layout below. Two orientations share
@@ -49,9 +55,14 @@ const BOX_SIZE = 40
  * below it too). After a placement, selection jumps to that box's own
  * first child — the next digit of the *same* number — not sideways to
  * a sibling, letting a keyboard-only student type one whole number in
- * a row. Finishing a number (the leaf) clears selection rather than
- * jumping into a different number — which one to build next is the
- * student's own choice, not something to autopilot into.
+ * a row. Finishing a number (the leaf) moves the highlight on to the
+ * next useful spot for a *different* number (see findNextEntryPoint)
+ * — only the highlight moves, never a digit; which value to type there
+ * is still entirely the student's own choice.
+ *
+ * Only the selected box (if any) is in the native Tab order — every
+ * other box gets `tabIndex={-1}` — so Tab can't land on some unrelated
+ * box purely because of where it happens to sit in the DOM.
  */
 function PermutationTree({ digits, noLeadingZero = true, values, onChange, disabled = false }) {
   const [selectedKey, setSelectedKey] = useState(null)
@@ -112,13 +123,14 @@ function PermutationTree({ digits, noLeadingZero = true, values, onChange, disab
       // the SAME number — rather than leaving selection where a
       // default tab order would take it (down to the next sibling,
       // i.e. the first digit of a different number entirely). Once a
-      // whole number is finished, selection clears instead of jumping
-      // into the next one — the student picks where to continue.
+      // whole number is finished, selection jumps to the next useful
+      // spot for a DIFFERENT number (see findNextEntryPoint) — it only
+      // ever moves the highlight, never places a digit on its own.
       const depth = pathKey.split('.').length - 1
-      setSelectedKey(depth + 1 < digits.length ? `${pathKey}.0` : null)
+      setSelectedKey(depth + 1 < digits.length ? `${pathKey}.0` : findNextEntryPoint(levels, next, pathKey))
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [disabled, values, digits, noLeadingZero, onChange],
+    [disabled, values, digits, noLeadingZero, onChange, levels],
   )
 
   const clear = (pathKey, sourceEl) => {
@@ -272,6 +284,7 @@ function PermutationTree({ digits, noLeadingZero = true, values, onChange, disab
                     <button
                       type="button"
                       data-ptree-key={key}
+                      tabIndex={selectedKey === key ? 0 : -1}
                       className={`ptree-box ptree-branch-${branchIndex % 6} ${selectedKey === key ? 'is-selected' : ''} ${value ? 'is-filled' : ''}`}
                       onClick={(e) => handleBoxClick(key, e)}
                       disabled={disabled}

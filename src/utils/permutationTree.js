@@ -78,6 +78,26 @@ export function computeNodeRows(levels) {
   return rows
 }
 
+/**
+ * Where selection should land after a number is finished: the
+ * shallowest empty box along the next leaf's root-to-leaf chain
+ * (wrapping around), so the student is pointed at the earliest useful
+ * spot to continue with a DIFFERENT number — never at a box whose own
+ * ancestors aren't filled yet, and never re-filling anything. Returns
+ * null once nothing is left empty anywhere in the tree.
+ */
+export function findNextEntryPoint(levels, values, afterLeafKey) {
+  const leafKeys = levels[levels.length - 1] ?? []
+  const startIndex = leafKeys.indexOf(afterLeafKey)
+  for (let offset = 1; offset <= leafKeys.length; offset++) {
+    const leafKey = leafKeys[(startIndex + offset) % leafKeys.length]
+    const chain = [...ancestorKeys(leafKey), leafKey]
+    const empty = chain.find((key) => !values[key])
+    if (empty) return empty
+  }
+  return null
+}
+
 /** True once every leaf box (the last digit's position) is filled. */
 export function isTreeComplete(digits, noLeadingZero, values) {
   const levels = buildLevels(digits, noLeadingZero)
