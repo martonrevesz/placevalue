@@ -164,6 +164,15 @@ function App() {
         <h1>Matematika gyakorló feladatok</h1>
       </header>
 
+      <div className="task-nav">
+        <button type="button" className="task-nav-item" onClick={() => setSubject('placevalue')}>
+          Helyiérték gyakorló
+        </button>
+        <button type="button" className="task-nav-item" onClick={() => setSubject('halmazok')}>
+          Halmazok
+        </button>
+      </div>
+
       <div className="disclaimer">
         <WarningIcon size={22} className="disclaimer-icon" />
         <div>
@@ -196,15 +205,6 @@ function App() {
             </li>
           </ul>
         </div>
-      </div>
-
-      <div className="task-nav">
-        <button type="button" className="task-nav-item" onClick={() => setSubject('placevalue')}>
-          Helyiérték gyakorló
-        </button>
-        <button type="button" className="task-nav-item" onClick={() => setSubject('halmazok')}>
-          Halmazok
-        </button>
       </div>
     </div>
   )
