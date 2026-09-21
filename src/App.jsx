@@ -180,16 +180,15 @@ function App() {
             </li>
             <li>
               A feladatok saját fejlesztésű, egyedi tartalmak: nem tartalmaznak szó szerint átvett
-              tankönyvi vagy munkafüzeti szöveget, ábrát vagy képet. Stílusukban a NAT2020 kerettantervhez
-              és az órai tananyaghoz igazodnak, de attól függetlenül, önállóan készültek.
+              tankönyvi vagy munkafüzeti szöveget, ábrát vagy képet.
             </li>
             <li>
               Az oldal független a tankönyvkiadóktól és más oktatási platformoktól, azokkal semmilyen
               kapcsolatban nem áll, nem hivatalos kiadvány, és nem szolgál kereskedelmi célt.
             </li>
             <li>
-              Az alkalmazás díjmentes, és jelenlegi állapotában ("as is") érhető el; a benne előforduló
-              esetleges hibákért felelősséget nem vállalunk.
+              Az alkalmazás díjmentes, és jelenlegi állapotában érhető el; a benne előforduló esetleges
+              hibákért felelősséget nem vállalunk.
             </li>
             <li>
               Az alkalmazás nem gyűjt és nem tárol személyes adatot — a megjelenő pontszám csak ideiglenes,
