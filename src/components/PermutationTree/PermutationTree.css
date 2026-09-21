@@ -36,6 +36,13 @@
   opacity: 0.5;
 }
 
+/* Already used by the selected box's ancestors or siblings — still
+   tappable/draggable (so attempting it still gives the reject shake),
+   just visibly not a real option right now. */
+.ptree-source-chip.is-unavailable {
+  opacity: 0.35;
+}
+
 /* The label strip stays put; only the (potentially very large, for a
    big digit set) canvas itself scrolls. A vertical tree (4 digits)
    scrolls sideways with its labels fixed in a left column; a
@@ -170,6 +177,36 @@
 
 .ptree-box:disabled {
   cursor: not-allowed;
+}
+
+/* A rejected placement (digit already used by an ancestor or sibling)
+   gets a brief shake + red flash instead of just silently doing
+   nothing — the class is toggled off and back on in JS so it can
+   replay even if the same box is rejected twice in a row. */
+@keyframes ptree-shake {
+  10%,
+  90% {
+    transform: translateX(-1px);
+  }
+  20%,
+  80% {
+    transform: translateX(2px);
+  }
+  30%,
+  50%,
+  70% {
+    transform: translateX(-4px);
+  }
+  40%,
+  60% {
+    transform: translateX(4px);
+  }
+}
+
+.ptree-box.ptree-box-rejected {
+  animation: ptree-shake 0.4s;
+  border-color: var(--color-error);
+  box-shadow: 0 0 0 2px var(--color-error-bg);
 }
 
 .ptree-leaf-number {

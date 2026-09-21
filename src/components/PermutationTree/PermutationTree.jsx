@@ -63,6 +63,12 @@ const BOX_SIZE = 40
  * Only the selected box (if any) is in the native Tab order — every
  * other box gets `tabIndex={-1}` — so Tab can't land on some unrelated
  * box purely because of where it happens to sit in the DOM.
+ *
+ * A digit that's already used by the selected box's ancestors or
+ * siblings is dimmed among the source chips rather than only being
+ * silently rejected on attempt — and any rejected attempt (typed,
+ * tapped, or dropped) gives the target box a brief shake, so there's
+ * always some feedback for "that digit's taken," not just nothing.
  */
 function PermutationTree({ digits, noLeadingZero = true, values, onChange, disabled = false }) {
   const [selectedKey, setSelectedKey] = useState(null)
@@ -111,9 +117,34 @@ function PermutationTree({ digits, noLeadingZero = true, values, onChange, disab
     return !blockingKeys.some((key) => key !== pathKey && values[key] === digit)
   }
 
+  // A digit already used by an ancestor or sibling of the SELECTED box
+  // is rejected on placement anyway (see isValidPlacement) — dimming
+  // its source chip up front means a student can see that before
+  // trying it, instead of only finding out by getting turned down.
+  const invalidDigitsForSelection = selectedKey
+    ? new Set(digits.filter((digit) => !isValidPlacement(selectedKey, digit)))
+    : null
+
+  // A short shake + red flash on the box itself, for whichever input
+  // method just got rejected (typed key, tapped chip, or a dropped
+  // drag) — all three route through `place` below, so one call here
+  // covers all of them. Manipulated directly rather than through state
+  // so a box can shake again immediately even if it's already mid-shake.
+  const triggerReject = (pathKey) => {
+    const el = document.querySelector(`[data-ptree-key="${pathKey}"]`)
+    if (!el) return
+    el.classList.remove('ptree-box-rejected')
+    void el.offsetWidth
+    el.classList.add('ptree-box-rejected')
+  }
+
   const place = useCallback(
     (pathKey, digit) => {
-      if (disabled || !isValidPlacement(pathKey, digit)) return
+      if (disabled) return
+      if (!isValidPlacement(pathKey, digit)) {
+        triggerReject(pathKey)
+        return
+      }
       const next = { ...values, [pathKey]: digit }
       Object.keys(next).forEach((key) => {
         if (key !== pathKey && key.startsWith(`${pathKey}.`)) delete next[key]
@@ -230,7 +261,7 @@ function PermutationTree({ digits, noLeadingZero = true, values, onChange, disab
           <button
             key={digit}
             type="button"
-            className="ptree-source-chip"
+            className={`ptree-source-chip ${invalidDigitsForSelection?.has(digit) ? 'is-unavailable' : ''}`}
             onClick={() => handleDigitTap(digit)}
             onPointerDown={handleSourcePointerDown(digit)}
             onPointerMove={handlePointerMove}
