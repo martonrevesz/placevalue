@@ -1,0 +1,159 @@
+.ptree-root {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-5);
+  width: 100%;
+}
+
+.ptree-source {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border: 2px dashed var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.ptree-source-chip {
+  min-width: var(--touch-target-min);
+  min-height: var(--touch-target-min);
+  font-size: var(--text-lg);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-ink);
+  background: var(--color-surface);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+
+.ptree-source-chip:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.ptree-columns-wrap {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-x: auto;
+  padding-bottom: var(--space-2);
+}
+
+.ptree-headers {
+  display: flex;
+  margin-bottom: var(--space-2);
+}
+
+.ptree-column-title {
+  flex-shrink: 0;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--color-ink-muted);
+  text-align: center;
+}
+
+.ptree-canvas {
+  position: relative;
+}
+
+.ptree-edges {
+  position: absolute;
+  top: 0;
+  left: 0;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.ptree-edge {
+  stroke: var(--color-border);
+  stroke-width: 2;
+}
+
+.ptree-node-abs {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+/* A soft per-top-branch tint so every box descended from the same
+   first-digit choice reads as one visual group, without needing to
+   draw actual connecting lines between boxes. */
+.ptree-branch-0 {
+  --ptree-tint: var(--color-primary-bg);
+}
+.ptree-branch-1 {
+  --ptree-tint: rgba(181, 118, 58, 0.12);
+}
+.ptree-branch-2 {
+  --ptree-tint: var(--color-success-bg);
+}
+.ptree-branch-3 {
+  --ptree-tint: rgba(181, 86, 140, 0.12);
+}
+.ptree-branch-4 {
+  --ptree-tint: rgba(47, 111, 143, 0.12);
+}
+.ptree-branch-5 {
+  --ptree-tint: var(--color-error-bg);
+}
+
+.ptree-box {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  font-size: var(--text-base);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-ink);
+  background: var(--ptree-tint, var(--color-surface));
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+.ptree-box.is-selected {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px var(--color-primary-border);
+}
+
+.ptree-box.is-filled {
+  border-color: var(--color-primary-border);
+}
+
+.ptree-box:disabled {
+  cursor: not-allowed;
+}
+
+.ptree-leaf-number {
+  font-size: var(--text-sm);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-primary);
+  white-space: nowrap;
+}
+
+.ptree-drag-ghost {
+  position: fixed;
+  z-index: 1000;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--text-base);
+  font-weight: 700;
+  color: var(--color-ink);
+  background: var(--color-surface);
+  border: 2px solid var(--color-primary);
+  border-radius: var(--radius-sm);
+  box-shadow: 0 6px 16px rgba(43, 38, 32, 0.25);
+}

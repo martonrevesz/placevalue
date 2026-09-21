@@ -11,6 +11,7 @@ import ComparisonTask from './tasks/ComparisonTask'
 import CashRegisterTask from './tasks/CashRegisterTask'
 import OrderNumbersTask from './tasks/OrderNumbersTask'
 import DigitValuesTask from './tasks/DigitValuesTask'
+import NumberBuilderTask from './tasks/NumberBuilderTask'
 import SetsIntroTask from './halmazok/SetsIntroTask'
 import OnePropertyTask from './halmazok/OnePropertyTask'
 import TwoPropertiesTask from './halmazok/TwoPropertiesTask'
@@ -26,6 +27,7 @@ const TASKS = [
   { label: 'Számok sorba rendezése', view: 'order-numbers' },
   { label: 'Helyi érték, alaki érték, valódi érték', view: 'digit-values' },
   { label: 'A tökéletes pénztárgép', view: 'cash-register' },
+  { label: 'SzámAlkotó', view: 'number-builder' },
 ]
 
 function App() {
@@ -81,6 +83,10 @@ function App() {
 
   if (view === 'digit-values') {
     return <DigitValuesTask />
+  }
+
+  if (view === 'number-builder') {
+    return <NumberBuilderTask />
   }
 
   if (view === 'words-demo') {
