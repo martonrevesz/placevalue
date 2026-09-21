@@ -126,17 +126,21 @@ function PermutationTree({ digits, noLeadingZero = true, values, onChange, disab
     : null
 
   // A short shake + red flash on the box itself, for whichever input
-  // method just got rejected (typed key, tapped chip, or a dropped
-  // drag) — all three route through `place` below, so one call here
-  // covers all of them. Manipulated directly rather than through state
-  // so a box can shake again immediately even if it's already mid-shake.
-  const triggerReject = (pathKey) => {
+  // method just got rejected — a digit already used by an ancestor or
+  // sibling (via `place`, below), or a keystroke that isn't even one
+  // of this round's digit cards at all (handled directly in the
+  // keydown effect, since there's no digit worth passing to `place`).
+  // Manipulated directly rather than through state so a box can shake
+  // again immediately even if it's already mid-shake. Stable across
+  // renders (no reactive values involved) so effects can depend on it
+  // without re-subscribing every render.
+  const triggerReject = useCallback((pathKey) => {
     const el = document.querySelector(`[data-ptree-key="${pathKey}"]`)
     if (!el) return
     el.classList.remove('ptree-box-rejected')
     void el.offsetWidth
     el.classList.add('ptree-box-rejected')
-  }
+  }, [])
 
   const place = useCallback(
     (pathKey, digit) => {
@@ -226,13 +230,19 @@ function PermutationTree({ digits, noLeadingZero = true, values, onChange, disab
         setSelectedKey(null)
         return
       }
-      if (/^[0-9]$/.test(e.key) && digits.includes(e.key)) {
+      if (!/^[0-9]$/.test(e.key)) return
+      if (digits.includes(e.key)) {
         place(selectedKey, e.key)
+      } else {
+        // Not even one of this round's cards (e.g. pressing "7" when
+        // the cards are 8/3/5) — still worth a shake, since silently
+        // doing nothing reads the same as an unresponsive key.
+        triggerReject(selectedKey)
       }
     }
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [selectedKey, disabled, digits, place])
+  }, [selectedKey, disabled, digits, place, triggerReject])
 
   const handleSourcePointerDown = (digit) => (e) => {
     if (disabled) return
