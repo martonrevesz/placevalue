@@ -35,11 +35,12 @@ export function digitsToNumber(digitStrings) {
 // Picked (not fully random) so a round sometimes includes a 0 — the
 // only thing that makes the leading-digit rule bite — and sometimes
 // doesn't, so both cases show up across rounds rather than only one.
-export function pickDigitSet(count) {
-  const includeZero = Math.random() < 0.5
-  const pool = includeZero
-    ? Array.from({ length: 9 }, (_, i) => String(i + 1))
-    : Array.from({ length: 9 }, (_, i) => String(i + 1))
+// `forceNoZero` overrides that for a round that should introduce the
+// plain, no-exceptions case first (the very first round, and whenever
+// the digit count changes) before a 0 shows up in a later round.
+export function pickDigitSet(count, { forceNoZero = false } = {}) {
+  const includeZero = !forceNoZero && Math.random() < 0.5
+  const pool = Array.from({ length: 9 }, (_, i) => String(i + 1))
   const nonZeroCount = includeZero ? count - 1 : count
   const chosen = []
   const available = [...pool]

@@ -25,7 +25,10 @@ function summarize(digits) {
 
 function NumberBuilderTask() {
   const [digitCount, setDigitCount] = useState(MIN_DIGITS)
-  const [digits, setDigits] = useState(() => pickDigitSet(MIN_DIGITS))
+  // First round (and the first round after changing the digit count)
+  // is always zero-free — the leading-zero exception is worth meeting
+  // only once the plain, no-exceptions case is already familiar.
+  const [digits, setDigits] = useState(() => pickDigitSet(MIN_DIGITS, { forceNoZero: true }))
   const [treeValues, setTreeValues] = useState({})
   const [countInput, setCountInput] = useState('')
   const [oddInput, setOddInput] = useState('')
@@ -43,8 +46,8 @@ function NumberBuilderTask() {
     minInput.trim() !== '' &&
     maxInput.trim() !== ''
 
-  const startNewRound = (nextDigitCount) => {
-    setDigits(pickDigitSet(nextDigitCount))
+  const startNewRound = (nextDigitCount, options) => {
+    setDigits(pickDigitSet(nextDigitCount, options))
     setTreeValues({})
     setCountInput('')
     setOddInput('')
@@ -55,7 +58,7 @@ function NumberBuilderTask() {
 
   const handleDigitCountChange = (value) => {
     setDigitCount(value)
-    startNewRound(value)
+    startNewRound(value, { forceNoZero: true })
   }
 
   const handleCheck = () => {
