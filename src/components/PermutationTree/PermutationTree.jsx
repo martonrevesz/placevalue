@@ -2,11 +2,18 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { ancestorKeys, buildLevels, computeNodeRows, siblingKeys } from '../../utils/permutationTree'
 import './PermutationTree.css'
 
-// Pixel geometry for the computed layout below — a node's row (from
-// computeNodeRows) times ROW_HEIGHT gives its vertical center; a
-// node's depth times COL_WIDTH gives its left edge.
-const ROW_HEIGHT = 48
-const COL_WIDTH = 100
+// Pixel geometry for the computed layout below. Two orientations share
+// this one geometry (and the rest of the component — selection,
+// keyboard entry, drag-and-drop, focus sync — is identical either way,
+// since none of it cares which screen axis "depth" happens to be
+// drawn on): a 3-digit tree reads left-to-right (depth is the
+// horizontal axis), a 4-digit tree reads top-to-bottom (depth is the
+// vertical axis, chosen once there'd otherwise be too many columns to
+// read comfortably left-to-right). A node's "row" (from
+// computeNodeRows — bottom-up centering so a path's start and end
+// stay close together) always drives whichever axis ISN'T depth.
+const DEPTH_SIZE = 88
+const LEAF_SIZE = 56
 const BOX_SIZE = 40
 
 /**
@@ -54,8 +61,26 @@ function PermutationTree({ digits, noLeadingZero = true, values, onChange, disab
   const levels = useMemo(() => buildLevels(digits, noLeadingZero), [digits, noLeadingZero])
   const rows = useMemo(() => computeNodeRows(levels), [levels])
   const leafCount = levels[levels.length - 1]?.length ?? 0
-  const canvasHeight = leafCount * ROW_HEIGHT
-  const canvasWidth = levels.length * COL_WIDTH
+  // 4 digits means too many columns to read comfortably left-to-right,
+  // so that's the only case that flips to top-to-bottom.
+  const isVertical = digits.length >= 4
+
+  const rowExtent = leafCount * LEAF_SIZE
+  // + one extra band's worth of room for the leaf-number readout past the last depth level.
+  const depthExtent = levels.length * DEPTH_SIZE + DEPTH_SIZE * 0.6
+  const canvasWidth = isVertical ? rowExtent : depthExtent
+  const canvasHeight = isVertical ? depthExtent : rowExtent
+
+  // Where a box at (depth, row) lands on screen — the one place both
+  // orientations funnel through, so a layout change only has to happen here.
+  const boxPos = useCallback(
+    (depth, row) => {
+      const depthPx = depth * DEPTH_SIZE
+      const rowPx = row * LEAF_SIZE + (LEAF_SIZE - BOX_SIZE) / 2
+      return isVertical ? { left: rowPx, top: depthPx } : { left: depthPx, top: rowPx }
+    },
+    [isVertical],
+  )
 
   const edges = useMemo(() => {
     const list = []
@@ -96,23 +121,38 @@ function PermutationTree({ digits, noLeadingZero = true, values, onChange, disab
     [disabled, values, digits, noLeadingZero, onChange],
   )
 
-  const clear = (pathKey) => {
+  const clear = (pathKey, sourceEl) => {
     if (disabled) return
     const next = { ...values }
     Object.keys(next).forEach((key) => {
       if (key === pathKey || key.startsWith(`${pathKey}.`)) delete next[key]
     })
     onChange(next)
+    // Clearing a box doesn't select anything, so nothing else claims
+    // its browser focus — left alone, the just-cleared box would keep
+    // showing the native focus ring even though it no longer means
+    // "you can type here."
+    sourceEl?.blur()
   }
 
-  const handleBoxClick = (pathKey) => {
+  const handleBoxClick = (pathKey, e) => {
     if (disabled) return
     if (values[pathKey]) {
-      clear(pathKey)
+      clear(pathKey, e.currentTarget)
       return
     }
     setSelectedKey((current) => (current === pathKey ? null : pathKey))
   }
+
+  // Keeps real browser focus in sync with `selectedKey` — without
+  // this, auto-advancing selection (see `place`) only moved the blue
+  // "selected" ring, while the native focus outline stayed stuck on
+  // whichever box was last actually clicked. That left two different
+  // boxes looking highlighted at once, in two different styles.
+  useEffect(() => {
+    if (!selectedKey) return
+    document.querySelector(`[data-ptree-key="${selectedKey}"]`)?.focus({ preventScroll: true })
+  }, [selectedKey])
 
   const handleDigitTap = (digit) => {
     if (disabled || !selectedKey) return
@@ -183,56 +223,66 @@ function PermutationTree({ digits, noLeadingZero = true, values, onChange, disab
         ))}
       </div>
 
-      <div className="ptree-columns-wrap">
-        <div className="ptree-headers" style={{ width: canvasWidth + 100 }}>
+      <div className={`ptree-diagram ${isVertical ? 'is-vertical' : 'is-horizontal'}`}>
+        <div className="ptree-level-labels" style={isVertical ? { height: canvasHeight } : { width: canvasWidth }}>
           {levels.map((_, depth) => (
-            <div key={depth} className="ptree-column-title" style={{ width: COL_WIDTH }}>
+            <div
+              key={depth}
+              className="ptree-level-label"
+              style={isVertical ? { height: DEPTH_SIZE } : { width: DEPTH_SIZE }}
+            >
               {depth + 1}. számjegy lehet:
             </div>
           ))}
         </div>
 
-        <div className="ptree-canvas" style={{ width: canvasWidth + 100, height: canvasHeight }}>
-          <svg className="ptree-edges" width={canvasWidth} height={canvasHeight}>
-            {edges.map(({ parent, child }) => {
-              const parentDepth = parent.split('.').length - 1
-              const x1 = parentDepth * COL_WIDTH + BOX_SIZE
-              const y1 = rows[parent] * ROW_HEIGHT + ROW_HEIGHT / 2
-              const x2 = (parentDepth + 1) * COL_WIDTH
-              const y2 = rows[child] * ROW_HEIGHT + ROW_HEIGHT / 2
-              return <line key={child} x1={x1} y1={y1} x2={x2} y2={y2} className="ptree-edge" />
-            })}
-          </svg>
+        <div className="ptree-canvas-scroll">
+          <div className="ptree-canvas" style={{ width: canvasWidth, height: canvasHeight }}>
+            <svg className="ptree-edges" width={canvasWidth} height={canvasHeight}>
+              {edges.map(({ parent, child }) => {
+                const parentDepth = parent.split('.').length - 1
+                const parentPos = boxPos(parentDepth, rows[parent])
+                const childPos = boxPos(parentDepth + 1, rows[child])
+                // Connect the trailing edge of the parent box to the
+                // leading edge of the child box, along the depth axis.
+                const x1 = parentPos.left + (isVertical ? BOX_SIZE / 2 : BOX_SIZE)
+                const y1 = parentPos.top + (isVertical ? BOX_SIZE : BOX_SIZE / 2)
+                const x2 = childPos.left + (isVertical ? BOX_SIZE / 2 : 0)
+                const y2 = childPos.top + (isVertical ? 0 : BOX_SIZE / 2)
+                return <line key={child} x1={x1} y1={y1} x2={x2} y2={y2} className="ptree-edge" />
+              })}
+            </svg>
 
-          {levels.map((keys, depth) =>
-            keys.map((key) => {
-              const value = values[key] ?? null
-              const isLeaf = depth === digits.length - 1
-              const branchIndex = Number(key.split('.')[0])
-              const top = rows[key] * ROW_HEIGHT + ROW_HEIGHT / 2 - BOX_SIZE / 2
-              return (
-                <div key={key} className="ptree-node-abs" style={{ left: depth * COL_WIDTH, top }}>
-                  <button
-                    type="button"
-                    data-ptree-key={key}
-                    className={`ptree-box ptree-branch-${branchIndex % 6} ${selectedKey === key ? 'is-selected' : ''} ${value ? 'is-filled' : ''}`}
-                    onClick={() => handleBoxClick(key)}
-                    disabled={disabled}
-                  >
-                    {value ?? ''}
-                  </button>
-                  {isLeaf && value && (
-                    <span className="ptree-leaf-number">
-                      {ancestorKeys(key)
-                        .map((k) => values[k])
-                        .join('')}
-                      {value}
-                    </span>
-                  )}
-                </div>
-              )
-            }),
-          )}
+            {levels.map((keys, depth) =>
+              keys.map((key) => {
+                const value = values[key] ?? null
+                const isLeaf = depth === digits.length - 1
+                const branchIndex = Number(key.split('.')[0])
+                const { left, top } = boxPos(depth, rows[key])
+                return (
+                  <div key={key} className="ptree-node-abs" style={{ left, top }}>
+                    <button
+                      type="button"
+                      data-ptree-key={key}
+                      className={`ptree-box ptree-branch-${branchIndex % 6} ${selectedKey === key ? 'is-selected' : ''} ${value ? 'is-filled' : ''}`}
+                      onClick={(e) => handleBoxClick(key, e)}
+                      disabled={disabled}
+                    >
+                      {value ?? ''}
+                    </button>
+                    {isLeaf && value && (
+                      <span className="ptree-leaf-number">
+                        {ancestorKeys(key)
+                          .map((k) => values[k])
+                          .join('')}
+                        {value}
+                      </span>
+                    )}
+                  </div>
+                )
+              }),
+            )}
+          </div>
         </div>
       </div>
 
