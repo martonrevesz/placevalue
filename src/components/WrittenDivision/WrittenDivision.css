@@ -1,0 +1,106 @@
+/* Squared paper: one grid square per digit, as in the workbook. The
+   cell size shrinks on narrow screens so the widest problem (5-digit
+   dividend) still fits a phone without scrolling. */
+.wd-paper {
+  --wd-pad: 8px;
+  --wd-cell: min(40px, calc((100vw - 2 * var(--space-4) - 2 * var(--wd-pad) - 4px) / var(--wd-cols, 12)));
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.wd-grid {
+  --wd-paper-line: rgba(47, 93, 119, 0.14);
+  display: grid;
+  padding: var(--wd-pad);
+  background-color: var(--color-surface);
+  background-image:
+    linear-gradient(to right, var(--wd-paper-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--wd-paper-line) 1px, transparent 1px);
+  background-size: var(--wd-cell) var(--wd-cell);
+  background-position: var(--wd-pad) var(--wd-pad);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: calc(var(--wd-cell) * 0.55);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.wd-static {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-ink);
+}
+
+/* The tick marking a dividend digit that has been brought down. */
+.wd-static.has-tick::after {
+  content: "'";
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  font-size: 0.8em;
+  line-height: 1;
+  color: var(--color-primary);
+}
+
+.wd-cell {
+  margin: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  font: inherit;
+  color: var(--color-primary);
+  background: var(--color-surface);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.wd-cell.is-empty {
+  border-style: dashed;
+}
+
+.wd-cell:hover:not(:disabled) {
+  border-color: var(--color-primary-border);
+}
+
+.wd-cell.is-active {
+  border-style: solid;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px var(--color-primary-bg);
+}
+
+.wd-cell:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 1px;
+}
+
+.wd-cell:disabled {
+  cursor: default;
+}
+
+.wd-cell.is-ok {
+  border-style: solid;
+  border-color: var(--color-success);
+  background: var(--color-success-bg);
+  color: var(--color-success);
+}
+
+.wd-cell.is-wrong {
+  border-style: solid;
+  border-color: var(--color-error);
+  background: var(--color-error-bg);
+  color: var(--color-error);
+}
+
+/* The rule under each subtraction (minus sign + product). */
+.wd-line {
+  align-self: end;
+  height: 0;
+  border-bottom: 2px solid var(--color-ink);
+  pointer-events: none;
+  z-index: 1;
+}

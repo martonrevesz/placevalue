@@ -1,0 +1,160 @@
+.written-division-task {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-5);
+  padding: var(--space-5) var(--space-4) var(--space-8);
+}
+
+.written-division-header {
+  width: 100%;
+  max-width: 1000px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.written-division-header > div {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.written-division-header a {
+  color: var(--color-primary);
+  font-size: var(--text-sm);
+}
+
+.written-division-controls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: var(--space-5);
+}
+
+.written-division-slider {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.written-division-slider input[type='range'] {
+  width: 140px;
+}
+
+.written-division-prompt {
+  font-size: var(--text-lg);
+  color: var(--color-ink);
+  text-align: center;
+}
+
+.written-division-prompt strong {
+  font-variant-numeric: tabular-nums;
+  color: var(--color-primary);
+}
+
+.written-division-step {
+  width: 100%;
+  max-width: 700px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.written-division-step h2 {
+  align-self: flex-start;
+  margin: 0;
+  font-size: var(--text-base);
+  color: var(--color-ink-muted);
+}
+
+.written-division-field {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  color: var(--color-ink);
+}
+
+.written-division-field input {
+  width: 8ch;
+  min-height: var(--touch-target-min);
+  padding: var(--space-2);
+  font-size: var(--text-base);
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-sm);
+}
+
+.written-division-field input.is-short {
+  width: 5ch;
+}
+
+.written-division-field.is-correct input,
+.written-division-field input.is-correct {
+  border-color: var(--color-success);
+  background: var(--color-success-bg);
+  color: var(--color-success);
+}
+
+.written-division-field.is-incorrect input,
+.written-division-field input.is-incorrect {
+  border-color: var(--color-error);
+  background: var(--color-error-bg);
+  color: var(--color-error);
+}
+
+.written-division-check-expression {
+  font-size: var(--text-lg);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.written-division-hint {
+  margin: 0;
+  max-width: 600px;
+  text-align: center;
+  font-size: var(--text-sm);
+  color: var(--color-ink-muted);
+}
+
+.written-division-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+}
+
+.written-division-actions button {
+  min-height: var(--touch-target-min);
+  padding: var(--space-3) var(--space-5);
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: var(--color-surface);
+  background: var(--color-primary);
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+}
+
+.written-division-actions button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.written-division-reset-score {
+  font-size: var(--text-sm);
+  color: var(--color-ink-muted);
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+}

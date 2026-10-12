@@ -12,6 +12,7 @@ import CashRegisterTask from './tasks/CashRegisterTask'
 import OrderNumbersTask from './tasks/OrderNumbersTask'
 import DigitValuesTask from './tasks/DigitValuesTask'
 import NumberBuilderTask from './tasks/NumberBuilderTask'
+import WrittenDivisionTask from './tasks/WrittenDivisionTask'
 import SetsIntroTask from './halmazok/SetsIntroTask'
 import OnePropertyTask from './halmazok/OnePropertyTask'
 import TwoPropertiesTask from './halmazok/TwoPropertiesTask'
@@ -29,6 +30,7 @@ const TASKS = [
   { label: 'Helyi érték, alaki érték, valódi érték', view: 'digit-values' },
   { label: 'A tökéletes pénztárgép', view: 'cash-register' },
   { label: 'SzámAlkotó', view: 'number-builder' },
+  { label: 'Írásbeli osztás', view: 'written-division' },
 ]
 
 function App() {
@@ -88,6 +90,10 @@ function App() {
 
   if (view === 'number-builder') {
     return <NumberBuilderTask />
+  }
+
+  if (view === 'written-division') {
+    return <WrittenDivisionTask />
   }
 
   if (view === 'words-demo') {
