@@ -76,11 +76,15 @@ export function roundDivisorForEstimate(divisor) {
   return divisor < 10 ? divisor : Math.round(divisor / 10) * 10
 }
 
-/** At most two non-zero leading digits, and within 10% of the dividend. */
+// Wide enough for compatible numbers a textbook would use (2502 : 68 ≈
+// 2800 : 70 = 40 is 12% off on the dividend, but a perfectly good estimate).
+const ROUNDED_DIVIDEND_TOLERANCE = 0.2
+
+/** At most two non-zero leading digits, and within 20% of the dividend. */
 export function isReasonableRoundedDividend(value, dividend) {
   if (!Number.isInteger(value) || value <= 0) return false
   const leadingDigits = String(value).replace(/0+$/, '')
-  return leadingDigits.length <= 2 && Math.abs(value - dividend) <= dividend / 10
+  return leadingDigits.length <= 2 && Math.abs(value - dividend) <= dividend * ROUNDED_DIVIDEND_TOLERANCE
 }
 
 /** The quotient of the student's own rounded numbers — whole, or rounded to a whole number. */
@@ -99,7 +103,7 @@ export function suggestEstimate(dividend, divisor) {
   const roundedDivisor = roundDivisorForEstimate(divisor)
   const unit = 10 ** Math.max(String(dividend).length - 2, 0)
   const candidates = []
-  for (let value = unit; value <= dividend * 1.1; value += unit) {
+  for (let value = unit; value <= dividend * (1 + ROUNDED_DIVIDEND_TOLERANCE); value += unit) {
     if (isReasonableRoundedDividend(value, dividend)) candidates.push(value)
   }
   const byDistance = (a, b) => Math.abs(a - dividend) - Math.abs(b - dividend)
