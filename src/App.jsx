@@ -30,7 +30,6 @@ const TASKS = [
   { label: 'Helyi érték, alaki érték, valódi érték', view: 'digit-values' },
   { label: 'A tökéletes pénztárgép', view: 'cash-register' },
   { label: 'SzámAlkotó', view: 'number-builder' },
-  { label: 'Írásbeli osztás', view: 'written-division' },
 ]
 
 function App() {
@@ -179,6 +178,9 @@ function App() {
         </button>
         <a className="task-nav-item" href="?view=number-builder">
           SzámAlkotó
+        </a>
+        <a className="task-nav-item" href="?view=written-division">
+          Írásbeli osztás
         </a>
       </div>
 
