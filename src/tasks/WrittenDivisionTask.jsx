@@ -4,12 +4,8 @@ import {
   fieldText,
   firstCell,
   generateDivisionProblem,
-  isAcceptedEstimateQuotient,
   isFieldFinished,
   isLeftToRight,
-  isReasonableRoundedDividend,
-  roundDivisorForEstimate,
-  suggestEstimate,
 } from '../utils/longDivision'
 import { useScore } from '../hooks/useScore'
 import WrittenDivision from '../components/WrittenDivision/WrittenDivision'
@@ -29,7 +25,6 @@ const DEFAULT_DIVISOR_DIGITS = 2
 // cell the next digit goes into; null means the active field was just
 // (re)entered, so the next digit starts it over from its first cell.
 const emptyEntry = () => ({ values: {}, active: 0, cursor: null })
-const emptyEstimate = () => ({ dividend: '', divisor: '', quotient: '' })
 
 function parseNumberInput(text) {
   const cleaned = text.replace(/\s/g, '')
@@ -38,8 +33,8 @@ function parseNumberInput(text) {
 
 /**
  * Written division in the workbook's subtraction form, in three parts:
- * becslés (round both numbers and divide in your head, as in the
- * textbooks — done before the grid appears, so it's a real estimate),
+ * becslés (how many digits will the quotient have — asked before the
+ * grid appears, since the grid's quotient cells would give it away),
  * the division itself, then ellenőrzés (multiply back, using the
  * student's OWN quotient and remainder, as one would on paper). All
  * three are graded together at the end — the button is "Kész" rather
@@ -50,7 +45,7 @@ function WrittenDivisionTask() {
   const [divisorDigits, setDivisorDigits] = useState(DEFAULT_DIVISOR_DIGITS)
   const [problem, setProblem] = useState(() => generateDivisionProblem(DEFAULT_DIVIDEND_DIGITS, DEFAULT_DIVISOR_DIGITS))
   const [phase, setPhase] = useState('estimate')
-  const [estimate, setEstimate] = useState(emptyEstimate)
+  const [estimateInput, setEstimateInput] = useState('')
   const [entry, setEntry] = useState(emptyEntry)
   const [checkInput, setCheckInput] = useState('')
   const [result, setResult] = useState(null)
@@ -69,20 +64,12 @@ function WrittenDivisionTask() {
   const allFieldsFilled = fields.every((f) => textOf(f) !== '')
   const activeCell = entry.cursor ?? firstCell(fields[entry.active], entry.values, problem.divisor)
 
-  // A one-digit divisor is already easy to divide by, so only the
-  // dividend gets rounded then.
-  const roundsDivisor = problem.divisor >= 10
-  const estimateDividend = parseNumberInput(estimate.dividend)
-  const estimateDivisor = roundsDivisor ? parseNumberInput(estimate.divisor) : problem.divisor
-  const estimateQuotient = parseNumberInput(estimate.quotient)
-  const estimateComplete = estimateDividend !== null && estimateDivisor !== null && estimateQuotient !== null
-  const updateEstimate = (part) => (e) => setEstimate((prev) => ({ ...prev, [part]: e.target.value }))
-  const estimateClass = (ok) => (isChecked ? (ok ? 'is-correct' : 'is-incorrect') : '')
+  const estimateDigits = parseNumberInput(estimateInput)
 
   const startNewRound = (nextDividendDigits, nextDivisorDigits) => {
     setProblem(generateDivisionProblem(nextDividendDigits, nextDivisorDigits))
     setPhase('estimate')
-    setEstimate(emptyEstimate())
+    setEstimateInput('')
     setEntry(emptyEntry())
     setCheckInput('')
     setResult(null)
@@ -160,69 +147,40 @@ function WrittenDivisionTask() {
     fields.forEach((f) => {
       fieldResults[f.id] = textOf(f) === f.expected
     })
-    const estimateResult = {
-      dividendOk: isReasonableRoundedDividend(estimateDividend, problem.dividend),
-      divisorOk: estimateDivisor === roundDivisorForEstimate(problem.divisor),
-      quotientOk: isAcceptedEstimateQuotient(estimateQuotient, estimateDividend, estimateDivisor),
-    }
-    const estimateOk = Object.values(estimateResult).every(Boolean)
+    const estimateOk = estimateDigits === problem.steps.length
     const checkExpected =
       studentQuotient !== null && studentRemainder !== null ? studentQuotient * problem.divisor + studentRemainder : null
     const checkOk = checkExpected !== null && parseNumberInput(checkInput) === checkExpected
     const allOk = Object.values(fieldResults).every(Boolean) && estimateOk && checkOk
-    setResult({ fieldResults, estimateResult, estimateOk, checkOk, checkExpected, allOk })
+    setResult({ fieldResults, estimateOk, checkOk, checkExpected, allOk })
     recordAttempt(allOk)
   }
 
   const exercise = `${problem.dividend} : ${problem.divisor}`
-  const suggestion = suggestEstimate(problem.dividend, problem.divisor)
 
   // The same row is the input in the becslés step and a read-only recap
   // (tinted after grading) under it once the grid is showing.
   const goToSolve = () => {
-    if (estimateComplete) setPhase('solve')
+    if (estimateDigits !== null) setPhase('solve')
   }
   const estimateRow = (editable) => (
-    <div className="written-division-field">
-      <span className="written-division-check-expression">{exercise} ≈</span>
+    <label
+      className={`written-division-field ${isChecked ? (result.estimateOk ? 'is-correct' : 'is-incorrect') : ''}`}
+    >
+      Hány jegyű lesz a hányados?
       <input
         type="text"
         inputMode="numeric"
-        aria-label="kerekített osztandó"
-        className={estimateClass(result?.estimateResult.dividendOk)}
-        value={estimate.dividend}
-        onChange={updateEstimate('dividend')}
-        disabled={!editable}
-        autoFocus={editable}
-      />
-      <span className="written-division-check-expression">:</span>
-      {roundsDivisor ? (
-        <input
-          type="text"
-          inputMode="numeric"
-          aria-label="kerekített osztó"
-          className={`is-short ${estimateClass(result?.estimateResult.divisorOk)}`}
-          value={estimate.divisor}
-          onChange={updateEstimate('divisor')}
-          disabled={!editable}
-        />
-      ) : (
-        <span className="written-division-check-expression">{problem.divisor}</span>
-      )}
-      <span className="written-division-check-expression">=</span>
-      <input
-        type="text"
-        inputMode="numeric"
-        aria-label="becsült hányados"
-        className={estimateClass(result?.estimateResult.quotientOk)}
-        value={estimate.quotient}
-        onChange={updateEstimate('quotient')}
+        className="is-short"
+        value={estimateInput}
+        onChange={(e) => setEstimateInput(e.target.value)}
         onKeyDown={(e) => {
           if (e.key === 'Enter') goToSolve()
         }}
         disabled={!editable}
+        autoFocus={editable}
       />
-    </div>
+    </label>
   )
 
   return (
@@ -265,14 +223,13 @@ function WrittenDivisionTask() {
       {phase === 'estimate' ? (
         <section className="written-division-step">
           <h2>1. Becslés</h2>
-          <p className="written-division-hint">Kerekítsd a számokat, és becsüld meg fejben a hányadost!</p>
           {estimateRow(true)}
           <p className="written-division-hint">
-            Tipp: {roundsDivisor ? 'az osztót kerekítsd tízesre, az osztandót pedig' : 'az osztandót kerekítsd'} egy olyan
-            kerek számra, amely közel van hozzá, és fejben könnyen osztható. Például: 4180 : 38 ≈ 4000 : 40 = 100.
+            Tipp: vegyél az osztandó elejéről annyi jegyet, hogy megvan benne az osztó — ez adja a hányados első jegyét,
+            és az osztandó minden további jegye még egy-egy jegyet.
           </p>
           <div className="written-division-actions">
-            <button type="button" onClick={goToSolve} disabled={!estimateComplete}>
+            <button type="button" onClick={goToSolve} disabled={estimateDigits === null}>
               Tovább
             </button>
           </div>
@@ -282,13 +239,9 @@ function WrittenDivisionTask() {
           <section className="written-division-step">
             <h2>1. Becslés</h2>
             {estimateRow(false)}
-            {isChecked && (
+            {isChecked && !result.estimateOk && (
               <p className="written-division-hint">
-                Becslésed: ≈ {estimateQuotient}, a pontos hányados: {problem.quotient}.
-                {!result.estimateOk &&
-                  ` Egy jó becslés például: ${suggestion.roundedDividend} : ${suggestion.roundedDivisor} ${
-                    suggestion.exact ? '=' : '≈'
-                  } ${suggestion.quotient}.`}
+                A hányados {problem.steps.length} jegyű ({problem.quotient}).
               </p>
             )}
           </section>

@@ -66,57 +66,6 @@ export function generateDivisionProblem(dividendDigits, divisorDigits) {
   return problem
 }
 
-// --- Becslés (estimation by rounding, as in the textbooks) -------------
-// The divisor is rounded to the nearest ten (a one-digit divisor stays as
-// it is); the dividend to any "round" number that's easy to divide in
-// your head — so compatible numbers like 7500 : 30 count too, not only
-// strict nearest-hundred rounding.
-
-export function roundDivisorForEstimate(divisor) {
-  return divisor < 10 ? divisor : Math.round(divisor / 10) * 10
-}
-
-// Wide enough for compatible numbers a textbook would use (2502 : 68 ≈
-// 2800 : 70 = 40 is 12% off on the dividend, but a perfectly good estimate).
-const ROUNDED_DIVIDEND_TOLERANCE = 0.2
-
-/** At most two non-zero leading digits, and within 20% of the dividend. */
-export function isReasonableRoundedDividend(value, dividend) {
-  if (!Number.isInteger(value) || value <= 0) return false
-  const leadingDigits = String(value).replace(/0+$/, '')
-  return leadingDigits.length <= 2 && Math.abs(value - dividend) <= dividend * ROUNDED_DIVIDEND_TOLERANCE
-}
-
-/** The quotient of the student's own rounded numbers — whole, or rounded to a whole number. */
-export function isAcceptedEstimateQuotient(value, roundedDividend, roundedDivisor) {
-  if (!roundedDivisor) return false
-  const exact = roundedDividend / roundedDivisor
-  return value === exact || value === Math.floor(exact) || value === Math.round(exact)
-}
-
-/**
- * A model estimate to show after a wrong one: the round number closest
- * to the dividend that divides evenly by the rounded divisor, or simply
- * the closest round number if none does.
- */
-export function suggestEstimate(dividend, divisor) {
-  const roundedDivisor = roundDivisorForEstimate(divisor)
-  const unit = 10 ** Math.max(String(dividend).length - 2, 0)
-  const candidates = []
-  for (let value = unit; value <= dividend * (1 + ROUNDED_DIVIDEND_TOLERANCE); value += unit) {
-    if (isReasonableRoundedDividend(value, dividend)) candidates.push(value)
-  }
-  const byDistance = (a, b) => Math.abs(a - dividend) - Math.abs(b - dividend)
-  const divisible = candidates.filter((value) => value % roundedDivisor === 0).sort(byDistance)
-  const roundedDividend = divisible[0] ?? candidates.sort(byDistance)[0] ?? dividend
-  return {
-    roundedDividend,
-    roundedDivisor,
-    quotient: Math.round(roundedDividend / roundedDivisor),
-    exact: roundedDividend % roundedDivisor === 0,
-  }
-}
-
 /**
  * Where everything sits on the squared-paper grid. Grid column 0 is
  * reserved for the minus sign of the first subtraction, so dividend

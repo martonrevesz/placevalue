@@ -96,15 +96,13 @@
   width: 5ch;
 }
 
-.written-division-field.is-correct input,
-.written-division-field input.is-correct {
+.written-division-field.is-correct input {
   border-color: var(--color-success);
   background: var(--color-success-bg);
   color: var(--color-success);
 }
 
-.written-division-field.is-incorrect input,
-.written-division-field input.is-incorrect {
+.written-division-field.is-incorrect input {
   border-color: var(--color-error);
   background: var(--color-error-bg);
   color: var(--color-error);
