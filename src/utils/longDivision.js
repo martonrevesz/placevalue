@@ -37,24 +37,10 @@ export function computeLongDivision(dividend, divisor) {
 }
 
 /**
- * Whether every quotient digit comes out right on the first try when
- * the partial dividend is divided by the divisor rounded to tens (the
- * usual trial division) — i.e. no step needs the trial digit corrected,
- * the part of two-digit division students find hardest.
- */
-function needsNoCorrection(steps, divisor) {
-  const rounded = roundDivisorForEstimate(divisor)
-  return steps.every((step) => Math.min(Math.floor(step.partial / rounded), 9) === step.digit)
-}
-
-/**
  * A random dividend/divisor pair with the given digit counts. Quotients
  * containing a 0 digit are skipped for now — they need a step with no
  * subtraction row, a different shape than every other step. About half
- * the problems divide exactly; the rest leave a remainder. With a
- * two-digit divisor, problems whose trial divisions never need
- * correcting are preferred (see needsNoCorrection), falling back to any
- * valid problem only if none turns up.
+ * the problems divide exactly; the rest leave a remainder.
  */
 export function generateDivisionProblem(dividendDigits, divisorDigits) {
   const divisorMin = divisorDigits === 1 ? 2 : 10 ** (divisorDigits - 1) + 1
@@ -63,8 +49,7 @@ export function generateDivisionProblem(dividendDigits, divisorDigits) {
   const dividendMax = 10 ** dividendDigits - 1
 
   let problem = null
-  let fallback = null
-  for (let attempt = 0; attempt < 2000; attempt++) {
+  for (let attempt = 0; attempt < 1000; attempt++) {
     const divisor = randomInt(divisorMin, divisorMax)
     let dividend
     if (Math.random() < 0.5) {
@@ -76,11 +61,9 @@ export function generateDivisionProblem(dividendDigits, divisorDigits) {
       dividend = randomInt(dividendMin, dividendMax)
     }
     problem = { dividend, divisor, ...computeLongDivision(dividend, divisor) }
-    if (problem.steps.some((step) => step.digit === 0)) continue
-    if (divisorDigits === 1 || needsNoCorrection(problem.steps, divisor)) return problem
-    fallback ??= problem
+    if (problem.steps.every((step) => step.digit > 0)) return problem
   }
-  return fallback ?? problem
+  return problem
 }
 
 // --- Becslés (estimation by rounding, as in the textbooks) -------------
