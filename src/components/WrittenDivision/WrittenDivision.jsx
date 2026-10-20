@@ -5,28 +5,50 @@ import './WrittenDivision.css'
  * Written division on squared paper, laid out by `buildDivisionLayout`
  * (utils/longDivision.js). Static cells (dividend, divisor, signs) are
  * plain text; the student's inputs are `fields`, each spanning one or
- * more cells. A field is filled right-aligned, calculator-style — type 1
- * then 4 and "14" sits flush against the field's right edge — so a
- * remainder shorter than its row still lands in the right columns
- * without the student having to skip cells.
+ * more cells. A field is filled right to left, starting at its units
+ * cell — the way the multiplication and subtraction are worked out on
+ * paper — so every digit stays in the cell it was typed into, and a
+ * number shorter than its row still lands in the right columns.
  *
  * Controlled: `values` is `{ [fieldId]: digitString }`, `activeIndex`
- * the field (index into `layout.fields`) currently being typed into.
- * Keys pressed on the focused field are reported as `onDigit`,
- * `onBackspace`, `onMove(±1)`; clicking any cell of a field calls
- * `onSelect(index)`. Only the active field is in the Tab order.
+ * the field (index into `layout.fields`) currently being typed into, and
+ * `replaceNext` whether the next digit starts that field over (from its
+ * units cell) instead of continuing to its left. The cell the next digit
+ * will land in is highlighted and holds focus. Keys pressed there are
+ * reported as `onDigit`, `onBackspace`, `onMove(±1)`; clicking any cell
+ * of a field calls `onSelect(index)`. Only that one cell is in the Tab
+ * order.
  *
  * `results` (`{ [fieldId]: boolean }`, after grading) tints each field
  * green or red. A dividend digit gets its tick once it has been brought
  * down (its lehozott field is filled); the first partial dividend's
  * last digit is ticked from the start, as on paper.
  */
-function WrittenDivision({ layout, values, activeIndex, results = null, disabled = false, onSelect, onDigit, onBackspace, onMove }) {
+function WrittenDivision({
+  layout,
+  values,
+  activeIndex,
+  replaceNext = false,
+  results = null,
+  disabled = false,
+  onSelect,
+  onDigit,
+  onBackspace,
+  onMove,
+}) {
   const activeCellRef = useRef(null)
+
+  const activeField = layout.fields[activeIndex]
+  const activeValue = values[activeField?.id] ?? ''
+  const targetCell = activeField
+    ? replaceNext
+      ? activeField.cols.length - 1
+      : Math.max(activeField.cols.length - activeValue.length - 1, 0)
+    : null
 
   useEffect(() => {
     if (!disabled) activeCellRef.current?.focus({ preventScroll: true })
-  }, [activeIndex, disabled])
+  }, [activeIndex, targetCell, disabled])
 
   const tickedIndices = new Set([layout.firstTickIndex])
   layout.fields.forEach((field) => {
@@ -76,21 +98,27 @@ function WrittenDivision({ layout, values, activeIndex, results = null, disabled
         {layout.fields.map((field, index) => {
           const value = values[field.id] ?? ''
           const offset = field.cols.length - value.length
-          const isActive = !disabled && index === activeIndex
+          const isActiveField = !disabled && index === activeIndex
           const result = results ? (results[field.id] ? 'ok' : 'wrong') : null
           return field.cols.map((col, i) => {
             const digit = i >= offset ? value[i - offset] : ''
-            const isLastCell = i === field.cols.length - 1
+            const isTarget = isActiveField && i === targetCell
             return (
               <button
                 key={`${field.id}-${col}`}
-                ref={isActive && isLastCell ? activeCellRef : undefined}
+                ref={isTarget ? activeCellRef : undefined}
                 type="button"
-                className={['wd-cell', !digit && 'is-empty', isActive && 'is-active', result && `is-${result}`]
+                className={[
+                  'wd-cell',
+                  !digit && 'is-empty',
+                  isActiveField && 'is-in-active-field',
+                  isTarget && 'is-active',
+                  result && `is-${result}`,
+                ]
                   .filter(Boolean)
                   .join(' ')}
                 style={{ gridRow: field.row + 1, gridColumn: col + 1 }}
-                tabIndex={isActive && isLastCell ? 0 : -1}
+                tabIndex={isTarget ? 0 : -1}
                 disabled={disabled}
                 onClick={() => onSelect(index)}
                 aria-label={`${FIELD_LABELS[field.kind]}${digit ? `, ${digit}` : ', üres'}`}

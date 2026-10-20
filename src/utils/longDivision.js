@@ -199,19 +199,21 @@ export function studentPartial(step, steps, values) {
 
 /**
  * Whether typing into `field` is clearly finished, so focus can move on
- * by itself: the field is full, it holds 0, or no further digit could
- * still make a valid entry — a product can't exceed its partial
- * dividend, a remainder can't reach the divisor. Those are the rules of
- * the arithmetic, not hints about this problem's answer.
+ * by itself. Fields are typed right to left (units first, as the
+ * multiplication and subtraction are done on paper), so `value` grows
+ * by gaining a new leading digit — the smallest number one more digit
+ * could make is 10^len + value. Finished when the field is full, or when
+ * even that would break the arithmetic: a product can't exceed its
+ * partial dividend, a remainder can't reach the divisor. Those are the
+ * rules themselves, not hints about this problem's answer.
  */
 export function isFieldFinished(field, value, { divisor, steps, values }) {
   if (value.length >= field.cols.length) return true
-  const number = Number(value)
-  if (number === 0) return true
-  if (field.kind === 'remainder') return number * 10 >= divisor
+  const smallestLonger = 10 ** value.length + Number(value)
+  if (field.kind === 'remainder') return smallestLonger >= divisor
   if (field.kind === 'product') {
     const partial = studentPartial(field.step, steps, values)
-    return partial !== null && number * 10 > partial
+    return partial !== null && smallestLonger > partial
   }
   return false
 }

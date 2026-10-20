@@ -91,16 +91,17 @@ function WrittenDivisionTask() {
     startNewRound(dividendDigits, value)
   }
 
-  // A field being (re)entered gets replaced by the next digit typed
-  // rather than appended to, so fixing a filled field is just "click it,
-  // type the new number" — no clearing first.
+  // Each new digit goes into the next cell to the LEFT (units first), so
+  // it becomes the value's new leading digit and nothing already typed
+  // moves. A field being (re)entered starts over from its units cell, so
+  // fixing a filled field is just "click it, type the new number".
   const enterDigit = (digit) => {
     if (isChecked) return
     setEntry((prev) => {
       const field = fields[prev.active]
       let value = prev.replaceNext ? '' : (prev.values[field.id] ?? '')
-      if (value.length >= field.cols.length || value === '0') value = ''
-      value += digit
+      if (value.length >= field.cols.length) value = ''
+      value = digit + value
       const values = { ...prev.values, [field.id]: value }
       const finished = isFieldFinished(field, value, { divisor: problem.divisor, steps: problem.steps, values })
       const active = finished && prev.active < fields.length - 1 ? prev.active + 1 : prev.active
@@ -113,12 +114,12 @@ function WrittenDivisionTask() {
     setEntry((prev) => {
       const field = fields[prev.active]
       const value = prev.values[field.id] ?? ''
-      if (value) return { ...prev, values: { ...prev.values, [field.id]: value.slice(0, -1) }, replaceNext: false }
+      if (value) return { ...prev, values: { ...prev.values, [field.id]: value.slice(1) }, replaceNext: false }
       if (prev.active === 0) return prev
       const previous = fields[prev.active - 1]
       const previousValue = prev.values[previous.id] ?? ''
       return {
-        values: { ...prev.values, [previous.id]: previousValue.slice(0, -1) },
+        values: { ...prev.values, [previous.id]: previousValue.slice(1) },
         active: prev.active - 1,
         replaceNext: false,
       }
@@ -280,13 +281,15 @@ function WrittenDivisionTask() {
           <section className="written-division-step">
             <h2>2. Számolás</h2>
             <p className="written-division-hint">
-              Írd be a hányados jegyeit, a szorzatokat, a maradékokat és a lehozott számjegyeket. A számok maguktól a
-              sor végére igazodnak; Enter vagy → a következő mezőre lép.
+              Írd be a hányados jegyeit, a szorzatokat, a maradékokat és a lehozott számjegyeket. A szorzatot és a
+              maradékot jobbról balra, az egyesektől kezdve írd, ahogy papíron is számolsz. Enter vagy → a következő
+              mezőre lép.
             </p>
             <WrittenDivision
               layout={layout}
               values={entry.values}
               activeIndex={entry.active}
+              replaceNext={entry.replaceNext}
               results={isChecked ? result.fieldResults : null}
               disabled={isChecked}
               onSelect={select}

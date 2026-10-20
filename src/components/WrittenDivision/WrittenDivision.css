@@ -67,6 +67,13 @@
   border-color: var(--color-primary-border);
 }
 
+/* The rest of the field being typed into, so its extent is visible;
+   the cell the next digit lands in gets the stronger .is-active ring. */
+.wd-cell.is-in-active-field {
+  border-style: solid;
+  border-color: var(--color-primary-border);
+}
+
 .wd-cell.is-active {
   border-style: solid;
   border-color: var(--color-primary);
