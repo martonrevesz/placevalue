@@ -5,19 +5,16 @@ import './WrittenDivision.css'
  * Written division on squared paper, laid out by `buildDivisionLayout`
  * (utils/longDivision.js). Static cells (dividend, divisor, signs) are
  * plain text; the student's inputs are `fields`, each spanning one or
- * more cells. A field is filled right to left, starting at its units
- * cell — the way the multiplication and subtraction are worked out on
- * paper — so every digit stays in the cell it was typed into, and a
- * number shorter than its row still lands in the right columns.
+ * more cells. Every digit stays in the cell it was typed into — which
+ * cell comes next (product rows left to right, remainder rows right to
+ * left) is the task's business, passed in as `activeCell`.
  *
- * Controlled: `values` is `{ [fieldId]: digitString }`, `activeIndex`
- * the field (index into `layout.fields`) currently being typed into, and
- * `replaceNext` whether the next digit starts that field over (from its
- * units cell) instead of continuing to its left. The cell the next digit
- * will land in is highlighted and holds focus. Keys pressed there are
- * reported as `onDigit`, `onBackspace`, `onMove(±1)`; clicking any cell
- * of a field calls `onSelect(index)`. Only that one cell is in the Tab
- * order.
+ * Controlled: `values` is `{ [fieldId]: cells[] }` ('' = empty cell),
+ * `activeIndex` the field (index into `layout.fields`) being typed into,
+ * `activeCell` the cell within it the next digit lands in — highlighted,
+ * and holding focus. Keys pressed there are reported as `onDigit`,
+ * `onBackspace`, `onMove(±1)`; clicking any cell of a field calls
+ * `onSelect(index)`. Only that one cell is in the Tab order.
  *
  * `results` (`{ [fieldId]: boolean }`, after grading) tints each field
  * green or red. A dividend digit gets its tick once it has been brought
@@ -28,7 +25,7 @@ function WrittenDivision({
   layout,
   values,
   activeIndex,
-  replaceNext = false,
+  activeCell,
   results = null,
   disabled = false,
   onSelect,
@@ -38,21 +35,13 @@ function WrittenDivision({
 }) {
   const activeCellRef = useRef(null)
 
-  const activeField = layout.fields[activeIndex]
-  const activeValue = values[activeField?.id] ?? ''
-  const targetCell = activeField
-    ? replaceNext
-      ? activeField.cols.length - 1
-      : Math.max(activeField.cols.length - activeValue.length - 1, 0)
-    : null
-
   useEffect(() => {
     if (!disabled) activeCellRef.current?.focus({ preventScroll: true })
-  }, [activeIndex, targetCell, disabled])
+  }, [activeIndex, activeCell, disabled])
 
   const tickedIndices = new Set([layout.firstTickIndex])
   layout.fields.forEach((field) => {
-    if (field.kind === 'lehozott' && values[field.id]) tickedIndices.add(field.dividendIndex)
+    if (field.kind === 'lehozott' && values[field.id]?.some(Boolean)) tickedIndices.add(field.dividendIndex)
   })
 
   const handleKeyDown = (e) => {
@@ -96,13 +85,12 @@ function WrittenDivision({
         ))}
 
         {layout.fields.map((field, index) => {
-          const value = values[field.id] ?? ''
-          const offset = field.cols.length - value.length
+          const cells = values[field.id] ?? []
           const isActiveField = !disabled && index === activeIndex
           const result = results ? (results[field.id] ? 'ok' : 'wrong') : null
           return field.cols.map((col, i) => {
-            const digit = i >= offset ? value[i - offset] : ''
-            const isTarget = isActiveField && i === targetCell
+            const digit = cells[i] || ''
+            const isTarget = isActiveField && i === activeCell
             return (
               <button
                 key={`${field.id}-${col}`}

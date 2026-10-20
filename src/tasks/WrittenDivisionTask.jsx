@@ -1,9 +1,12 @@
 import { useMemo, useState } from 'react'
 import {
   buildDivisionLayout,
+  fieldText,
+  firstCell,
   generateDivisionProblem,
   isAcceptedEstimateQuotient,
   isFieldFinished,
+  isLeftToRight,
   isReasonableRoundedDividend,
   roundDivisorForEstimate,
   suggestEstimate,
@@ -22,7 +25,10 @@ const MIN_DIVISOR_DIGITS = 1
 const MAX_DIVISOR_DIGITS = 2
 const DEFAULT_DIVISOR_DIGITS = 2
 
-const emptyEntry = () => ({ values: {}, active: 0, replaceNext: true })
+// `values` maps a field id to its cells ('' = empty). `cursor` is the
+// cell the next digit goes into; null means the active field was just
+// (re)entered, so the next digit starts it over from its first cell.
+const emptyEntry = () => ({ values: {}, active: 0, cursor: null })
 const emptyEstimate = () => ({ dividend: '', divisor: '', quotient: '' })
 
 function parseNumberInput(text) {
@@ -56,11 +62,12 @@ function WrittenDivisionTask() {
 
   const quotientFields = fields.filter((f) => f.kind === 'quotient')
   const finalRemainderField = fields.filter((f) => f.kind === 'remainder').at(-1)
-  const studentQuotient = quotientFields.every((f) => entry.values[f.id])
-    ? Number(quotientFields.map((f) => entry.values[f.id]).join(''))
-    : null
-  const studentRemainder = entry.values[finalRemainderField.id] ? Number(entry.values[finalRemainderField.id]) : null
-  const allFieldsFilled = fields.every((f) => entry.values[f.id])
+  const textOf = (field) => fieldText(entry.values[field.id])
+  const studentQuotient = quotientFields.every(textOf) ? Number(quotientFields.map(textOf).join('')) : null
+  const studentRemainder = textOf(finalRemainderField) ? Number(textOf(finalRemainderField)) : null
+  // A field with a gap in it (null) counts as filled — and gets graded wrong.
+  const allFieldsFilled = fields.every((f) => textOf(f) !== '')
+  const activeCell = entry.cursor ?? firstCell(fields[entry.active], entry.values, problem.divisor)
 
   // A one-digit divisor is already easy to divide by, so only the
   // dividend gets rounded then.
@@ -91,49 +98,57 @@ function WrittenDivisionTask() {
     startNewRound(dividendDigits, value)
   }
 
-  // Each new digit goes into the next cell to the LEFT (units first), so
-  // it becomes the value's new leading digit and nothing already typed
-  // moves. A field being (re)entered starts over from its units cell, so
-  // fixing a filled field is just "click it, type the new number".
+  // A digit lands in the cursor cell and stays there; the cursor then
+  // steps right (product row) or left (remainder row). A field being
+  // (re)entered starts over from its first cell, so fixing one is just
+  // "click it, type the number again".
   const enterDigit = (digit) => {
     if (isChecked) return
     setEntry((prev) => {
       const field = fields[prev.active]
-      let value = prev.replaceNext ? '' : (prev.values[field.id] ?? '')
-      if (value.length >= field.cols.length) value = ''
-      value = digit + value
-      const values = { ...prev.values, [field.id]: value }
-      const finished = isFieldFinished(field, value, { divisor: problem.divisor, steps: problem.steps, values })
-      const active = finished && prev.active < fields.length - 1 ? prev.active + 1 : prev.active
-      return { values, active, replaceNext: active !== prev.active }
+      const width = field.cols.length
+      const fresh = prev.cursor === null
+      const cells = fresh ? Array(width).fill('') : [...(prev.values[field.id] ?? Array(width).fill(''))]
+      const cell = fresh ? firstCell(field, prev.values, problem.divisor) : prev.cursor
+      cells[cell] = digit
+      const values = { ...prev.values, [field.id]: cells }
+      const nextCell = cell + (isLeftToRight(field) ? 1 : -1)
+      const finished = isFieldFinished(field, cells, nextCell, { divisor: problem.divisor, steps: problem.steps, values })
+      if (!finished) return { values, active: prev.active, cursor: nextCell }
+      return { values, active: Math.min(prev.active + 1, fields.length - 1), cursor: null }
     })
   }
 
+  // Erases the most recently typed digit — the rightmost one in a product
+  // row, the leftmost in a remainder row — stepping back into the
+  // previous field once this one is empty.
   const backspace = () => {
     if (isChecked) return
     setEntry((prev) => {
-      const field = fields[prev.active]
-      const value = prev.values[field.id] ?? ''
-      if (value) return { ...prev, values: { ...prev.values, [field.id]: value.slice(1) }, replaceNext: false }
-      if (prev.active === 0) return prev
-      const previous = fields[prev.active - 1]
-      const previousValue = prev.values[previous.id] ?? ''
-      return {
-        values: { ...prev.values, [previous.id]: previousValue.slice(1) },
-        active: prev.active - 1,
-        replaceNext: false,
+      const eraseLastIn = (index) => {
+        const field = fields[index]
+        const cells = [...(prev.values[field.id] ?? Array(field.cols.length).fill(''))]
+        const filled = cells.flatMap((c, i) => (c ? [i] : []))
+        if (filled.length === 0) return null
+        const cell = isLeftToRight(field) ? filled.at(-1) : filled[0]
+        cells[cell] = ''
+        return { values: { ...prev.values, [field.id]: cells }, active: index, cursor: cell }
       }
+      return (
+        eraseLastIn(prev.active) ??
+        (prev.active > 0 ? (eraseLastIn(prev.active - 1) ?? { ...prev, active: prev.active - 1, cursor: null }) : prev)
+      )
     })
   }
 
   const move = (delta) => {
     setEntry((prev) => {
       const active = Math.min(Math.max(prev.active + delta, 0), fields.length - 1)
-      return { ...prev, active, replaceNext: true }
+      return { ...prev, active, cursor: null }
     })
   }
 
-  const select = (index) => setEntry((prev) => ({ ...prev, active: index, replaceNext: true }))
+  const select = (index) => setEntry((prev) => ({ ...prev, active: index, cursor: null }))
 
   const clearAll = () => {
     if (isChecked) return
@@ -143,7 +158,7 @@ function WrittenDivisionTask() {
   const handleCheck = () => {
     const fieldResults = {}
     fields.forEach((f) => {
-      fieldResults[f.id] = entry.values[f.id] === f.expected
+      fieldResults[f.id] = textOf(f) === f.expected
     })
     const estimateResult = {
       dividendOk: isReasonableRoundedDividend(estimateDividend, problem.dividend),
@@ -281,15 +296,15 @@ function WrittenDivisionTask() {
           <section className="written-division-step">
             <h2>2. Számolás</h2>
             <p className="written-division-hint">
-              Írd be a hányados jegyeit, a szorzatokat, a maradékokat és a lehozott számjegyeket. A szorzatot és a
-              maradékot jobbról balra, az egyesektől kezdve írd, ahogy papíron is számolsz. Enter vagy → a következő
+              Írd be a hányados jegyeit, a szorzatokat, a maradékokat és a lehozott számjegyeket. A szorzatot balról
+              jobbra, a maradékot jobbról balra, az egyesektől kezdve írd, ahogy papíron is. Enter vagy → a következő
               mezőre lép.
             </p>
             <WrittenDivision
               layout={layout}
               values={entry.values}
               activeIndex={entry.active}
-              replaceNext={entry.replaceNext}
+              activeCell={activeCell}
               results={isChecked ? result.fieldResults : null}
               disabled={isChecked}
               onSelect={select}
