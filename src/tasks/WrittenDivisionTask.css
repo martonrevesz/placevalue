@@ -114,6 +114,38 @@
   font-variant-numeric: tabular-nums;
 }
 
+.written-division-work {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: center;
+  gap: var(--space-4);
+  max-width: 100%;
+}
+
+.written-division-tipbox {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-primary-bg);
+  border: 1px solid var(--color-primary-border);
+  border-radius: var(--radius-md);
+  font-variant-numeric: tabular-nums;
+  color: var(--color-ink);
+}
+
+.written-division-tipbox p {
+  margin: 0;
+  white-space: nowrap;
+}
+
+.written-division-tipbox-title {
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
 .written-division-hint {
   margin: 0;
   max-width: 600px;

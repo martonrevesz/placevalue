@@ -253,18 +253,32 @@ function WrittenDivisionTask() {
               jobbra, a maradékot jobbról balra, az egyesektől kezdve írd, ahogy papíron is. Enter vagy → a következő
               mezőre lép.
             </p>
-            <WrittenDivision
-              layout={layout}
-              values={entry.values}
-              activeIndex={entry.active}
-              activeCell={activeCell}
-              results={isChecked ? result.fieldResults : null}
-              disabled={isChecked}
-              onSelect={select}
-              onDigit={enterDigit}
-              onBackspace={backspace}
-              onMove={move}
-            />
+            <div className="written-division-work">
+              <WrittenDivision
+                layout={layout}
+                values={entry.values}
+                activeIndex={entry.active}
+                activeCell={activeCell}
+                results={isChecked ? result.fieldResults : null}
+                disabled={isChecked}
+                onSelect={select}
+                onDigit={enterDigit}
+                onBackspace={backspace}
+                onMove={move}
+              />
+              {/* The osztó's 5× and 10× multiples: comparing a partial
+                  dividend with them tells whether its quotient digit is
+                  below or above 5 — it can never reach 10. */}
+              <aside className="written-division-tipbox">
+                <p className="written-division-tipbox-title">Segítség</p>
+                <p>
+                  5 · {problem.divisor} = {5 * problem.divisor}
+                </p>
+                <p>
+                  10 · {problem.divisor} = {10 * problem.divisor}
+                </p>
+              </aside>
+            </div>
             <DigitPad onDigit={enterDigit} onClear={backspace} onClearAll={clearAll} disabled={isChecked} />
           </section>
 
