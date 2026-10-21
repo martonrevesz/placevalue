@@ -316,8 +316,7 @@ function WrittenDivisionTask() {
           {estimateRow(true)}
           <p className="written-division-hint">
             Tipp: az osztandó elejéről vegyél annyi jegyet, hogy az így kapott szám legalább akkora legyen, mint az
-            osztó. Például 1026 : 44-nél a 10 még kevés, de a 102 már elég. Ebből lesz a hányados első jegye, és az
-            osztandó minden további jegye még egy jegyet ad hozzá — itt a 6, tehát a hányados kétjegyű.
+            osztó. Ebből lesz a hányados első jegye, és az osztandó minden további jegye még egy jegyet ad hozzá.
           </p>
           <div className="written-division-actions">
             <button type="button" onClick={goToSolve} disabled={estimateDigits === null}>
