@@ -104,9 +104,9 @@ export function buildDivisionLayout({ dividend, divisor, steps }) {
     const span = range(gridCol(step.startCol), gridCol(step.endCol))
 
     fields.push({ id: `q${k}`, kind: 'quotient', step: k, row: 0, cols: [quotientStart + k], expected: String(step.digit) })
-    statics.push({ row: productRow, col: gridCol(step.startCol) - 1, text: '−' })
+    statics.push({ row: productRow, col: gridCol(step.startCol) - 1, text: '−', step: k })
     fields.push({ id: `p${k}`, kind: 'product', step: k, row: productRow, cols: span, expected: String(step.product) })
-    lines.push({ row: productRow, fromCol: gridCol(step.startCol) - 1, toCol: gridCol(step.endCol) })
+    lines.push({ row: productRow, fromCol: gridCol(step.startCol) - 1, toCol: gridCol(step.endCol), step: k })
     fields.push({ id: `r${k}`, kind: 'remainder', step: k, row: remainderRow, cols: span, expected: String(step.remainder) })
     if (k < steps.length - 1) {
       const dividendIndex = step.endCol + 1
@@ -161,6 +161,18 @@ export function studentPartial(step, steps, values) {
   const lehozott = fieldText(values[`l${step - 1}`])
   if (!remainder || !lehozott) return null
   return Number(remainder + lehozott)
+}
+
+/**
+ * How many fields (a prefix, in writing order) the student has reached:
+ * the first one always, then each next one once the field before it
+ * has any digit — so rows appear one at a time as the work proceeds
+ * instead of the whole grid facing the student from the start.
+ */
+export function reachedFieldCount(fields, values) {
+  let count = 1
+  while (count < fields.length && values[fields[count - 1].id]?.some(Boolean)) count += 1
+  return count
 }
 
 /**

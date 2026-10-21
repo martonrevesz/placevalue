@@ -16,7 +16,9 @@ import './WrittenDivision.css'
  * `onSelect(fieldIndex, cellIndex)`. Keys pressed are reported as
  * `onDigit`, `onBackspace`, `onMoveCell(±1)` (arrow keys, one cell) and
  * `onMove(±1)` (Enter / Tab, one field). Only that one cell is in the
- * Tab order.
+ * Tab order. `revealed` limits drawing to the first that-many fields, so
+ * rows can appear one at a time; the paper itself keeps its full size,
+ * so nothing shifts as they do.
  *
  * `results` (`{ [fieldId]: boolean }`, after grading) tints each field
  * green or red. A dividend digit gets its tick once it has been brought
@@ -28,6 +30,7 @@ function WrittenDivision({
   values,
   activeIndex,
   activeCell,
+  revealed = Infinity,
   results = null,
   disabled = false,
   onSelect,
@@ -41,6 +44,15 @@ function WrittenDivision({
   useEffect(() => {
     if (!disabled) activeCellRef.current?.focus({ preventScroll: true })
   }, [activeIndex, activeCell, disabled])
+
+  // Only the first `revealed` fields (in writing order) are drawn, plus
+  // every quotient cell — those sit on the header line, which shows
+  // from the start. A step's minus sign and rule appear with its product.
+  const isShown = (field, index) => field.kind === 'quotient' || index < revealed
+  const shownSteps = new Set(
+    layout.fields.flatMap((field, index) => (field.kind === 'product' && isShown(field, index) ? [field.step] : [])),
+  )
+  const isStepPartShown = (item) => item.step === undefined || shownSteps.has(item.step)
 
   const tickedIndices = new Set([layout.firstTickIndex])
   layout.fields.forEach((field) => {
@@ -80,7 +92,7 @@ function WrittenDivision({
         }}
         onKeyDown={handleKeyDown}
       >
-        {layout.statics.map((cell) => (
+        {layout.statics.filter(isStepPartShown).map((cell) => (
           <div
             key={`s-${cell.row}-${cell.col}`}
             className={`wd-static ${tickedIndices.has(cell.dividendIndex) ? 'has-tick' : ''}`}
@@ -91,6 +103,7 @@ function WrittenDivision({
         ))}
 
         {layout.fields.map((field, index) => {
+          if (!isShown(field, index)) return null
           const cells = values[field.id] ?? []
           const isActiveField = !disabled && index === activeIndex
           const result = results ? (results[field.id] ? 'ok' : 'wrong') : null
@@ -123,7 +136,7 @@ function WrittenDivision({
           })
         })}
 
-        {layout.lines.map((line) => (
+        {layout.lines.filter(isStepPartShown).map((line) => (
           <div
             key={`line-${line.row}`}
             className="wd-line"

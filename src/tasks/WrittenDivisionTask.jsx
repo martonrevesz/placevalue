@@ -4,6 +4,7 @@ import {
   fieldText,
   generateDivisionProblem,
   isFieldFinished,
+  reachedFieldCount,
 } from '../utils/longDivision'
 import { useScore } from '../hooks/useScore'
 import WrittenDivision from '../components/WrittenDivision/WrittenDivision'
@@ -22,7 +23,9 @@ const DEFAULT_DIVISOR_DIGITS = 2
 // `values` maps a field id to its cells ('' = empty); `active` is the
 // field being typed into and `cursor` the cell within it the next digit
 // goes into. The first field is a single quotient cell, so cursor 0.
-const emptyEntry = () => ({ values: {}, active: 0, cursor: 0 })
+// `revealed` is how many fields (in writing order) are shown so far —
+// it only ever grows, so erasing a digit doesn't make a row vanish.
+const emptyEntry = () => ({ values: {}, active: 0, cursor: 0, revealed: 1 })
 
 // "05" for a remainder of 5 is a notation slip, not an arithmetic one —
 // and the highlighted empty tens cell all but invites it, since after
@@ -96,9 +99,20 @@ function WrittenDivisionTask() {
   // cell: one to the left (rows are written from the units), unless an
   // empty cell was left to the right, which comes first; once the row is
   // complete, the next field's units cell.
+  // Every update goes through here: rows appear as the student reaches
+  // them (see reachedFieldCount), or moves into them on purpose — and
+  // stay once shown.
+  const updateEntry = (compute) =>
+    setEntry((prev) => {
+      const next = compute(prev)
+      if (next === prev) return prev
+      const revealed = Math.max(prev.revealed, reachedFieldCount(fields, next.values), next.active + 1)
+      return { ...next, revealed }
+    })
+
   const enterDigit = (digit) => {
     if (isChecked) return
-    setEntry((prev) => {
+    updateEntry((prev) => {
       const field = fields[prev.active]
       const cells = cellsOf(prev.values, field)
       const cell = prev.cursor
@@ -119,7 +133,7 @@ function WrittenDivisionTask() {
   // field) and clears that instead.
   const backspace = () => {
     if (isChecked) return
-    setEntry((prev) => {
+    updateEntry((prev) => {
       const field = fields[prev.active]
       const cells = cellsOf(prev.values, field)
       if (cells[prev.cursor] || prev.cursor < field.cols.length - 1) {
@@ -138,7 +152,7 @@ function WrittenDivisionTask() {
   }
 
   const move = (delta) => {
-    setEntry((prev) => {
+    updateEntry((prev) => {
       const active = Math.min(Math.max(prev.active + delta, 0), fields.length - 1)
       return { ...prev, active, cursor: unitsCell(active) }
     })
@@ -147,7 +161,7 @@ function WrittenDivisionTask() {
   // Arrow keys: one cell at a time, crossing into the neighbouring field
   // at a field's edge.
   const moveCell = (delta) => {
-    setEntry((prev) => {
+    updateEntry((prev) => {
       const cursor = prev.cursor + delta
       if (cursor >= 0 && cursor < fields[prev.active].cols.length) return { ...prev, cursor }
       const active = prev.active + delta
@@ -156,7 +170,7 @@ function WrittenDivisionTask() {
     })
   }
 
-  const select = (index, cell) => setEntry((prev) => ({ ...prev, active: index, cursor: cell }))
+  const select = (index, cell) => updateEntry((prev) => ({ ...prev, active: index, cursor: cell }))
 
   const clearAll = () => {
     if (isChecked) return
@@ -280,6 +294,7 @@ function WrittenDivisionTask() {
                 values={entry.values}
                 activeIndex={entry.active}
                 activeCell={entry.cursor}
+                revealed={isChecked ? fields.length : entry.revealed}
                 results={isChecked ? result.fieldResults : null}
                 disabled={isChecked}
                 onSelect={select}
