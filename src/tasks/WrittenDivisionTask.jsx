@@ -24,6 +24,13 @@ const DEFAULT_DIVISOR_DIGITS = 2
 // goes into. The first field is a single quotient cell, so cursor 0.
 const emptyEntry = () => ({ values: {}, active: 0, cursor: 0 })
 
+// "05" for a remainder of 5 is a notation slip, not an arithmetic one —
+// and the highlighted empty tens cell all but invites it, since after
+// the 5 the grid can't know a second digit isn't coming (it could be 15).
+function withoutLeadingZeros(text) {
+  return text?.replace(/^0+(?=\d)/, '') ?? text
+}
+
 function parseNumberInput(text) {
   const cleaned = text.replace(/\s/g, '')
   return /^\d+$/.test(cleaned) ? Number(cleaned) : null
@@ -159,7 +166,7 @@ function WrittenDivisionTask() {
   const handleCheck = () => {
     const fieldResults = {}
     fields.forEach((f) => {
-      fieldResults[f.id] = textOf(f) === f.expected
+      fieldResults[f.id] = withoutLeadingZeros(textOf(f)) === f.expected
     })
     const estimateOk = estimateDigits === problem.steps.length
     const checkExpected =
