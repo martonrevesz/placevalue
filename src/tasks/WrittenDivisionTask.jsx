@@ -24,6 +24,14 @@ const MIN_DIVISOR_DIGITS = 1
 const MAX_DIVISOR_DIGITS = 2
 const DEFAULT_DIVISOR_DIGITS = 2
 
+// Only for two-digit divisors (see pickDivisor in utils/longDivision.js).
+const DIFFICULTIES = [
+  { id: 'easy', label: 'Könnyű', hint: 'Kerek tízes osztó (20, 30, … 90)' },
+  { id: 'medium', label: 'Közepes', hint: 'Lefelé kerekíthető osztó (21–24, 31–34, …)' },
+  { id: 'hard', label: 'Nehéz', hint: 'Bármilyen kétjegyű osztó' },
+]
+const DEFAULT_DIFFICULTY = 'medium'
+
 // `values` maps a field id to its cells ('' = empty); `active` is the
 // field being typed into and `cursor` the cell within it the next digit
 // goes into. The first field is a single quotient cell, so cursor 0.
@@ -55,7 +63,10 @@ function parseNumberInput(text) {
 function WrittenDivisionTask() {
   const [dividendDigits, setDividendDigits] = useState(DEFAULT_DIVIDEND_DIGITS)
   const [divisorDigits, setDivisorDigits] = useState(DEFAULT_DIVISOR_DIGITS)
-  const [problem, setProblem] = useState(() => generateDivisionProblem(DEFAULT_DIVIDEND_DIGITS, DEFAULT_DIVISOR_DIGITS))
+  const [difficulty, setDifficulty] = useState(DEFAULT_DIFFICULTY)
+  const [problem, setProblem] = useState(() =>
+    generateDivisionProblem(DEFAULT_DIVIDEND_DIGITS, DEFAULT_DIVISOR_DIGITS, DEFAULT_DIFFICULTY),
+  )
   const [phase, setPhase] = useState('estimate')
   const [estimateInput, setEstimateInput] = useState('')
   const [entry, setEntry] = useState(emptyEntry)
@@ -97,8 +108,8 @@ function WrittenDivisionTask() {
 
   const estimateDigits = parseNumberInput(estimateInput)
 
-  const startNewRound = (nextDividendDigits, nextDivisorDigits) => {
-    setProblem(generateDivisionProblem(nextDividendDigits, nextDivisorDigits))
+  const startNewRound = (nextDividendDigits, nextDivisorDigits, nextDifficulty = difficulty) => {
+    setProblem(generateDivisionProblem(nextDividendDigits, nextDivisorDigits, nextDifficulty))
     setPhase('estimate')
     setEstimateInput('')
     setEntry(emptyEntry())
@@ -109,6 +120,11 @@ function WrittenDivisionTask() {
   const handleDividendDigitsChange = (value) => {
     setDividendDigits(value)
     startNewRound(value, divisorDigits)
+  }
+
+  const handleDifficultyChange = (value) => {
+    setDifficulty(value)
+    startNewRound(dividendDigits, divisorDigits, value)
   }
 
   const handleDivisorDigitsChange = (value) => {
@@ -271,6 +287,23 @@ function WrittenDivisionTask() {
             onChange={(e) => handleDivisorDigitsChange(Number(e.target.value))}
           />
         </label>
+        {divisorDigits === 2 && (
+          <div className="written-division-difficulty" role="group" aria-label="Nehézség">
+            Nehézség:
+            {DIFFICULTIES.map((level) => (
+              <button
+                key={level.id}
+                type="button"
+                title={level.hint}
+                aria-pressed={difficulty === level.id}
+                className={difficulty === level.id ? 'is-selected' : ''}
+                onClick={() => handleDifficultyChange(level.id)}
+              >
+                {level.label}
+              </button>
+            ))}
+          </div>
+        )}
       </section>
 
       <p className="written-division-prompt">

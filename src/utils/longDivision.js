@@ -37,20 +37,33 @@ export function computeLongDivision(dividend, divisor) {
 }
 
 /**
- * A random dividend/divisor pair with the given digit counts. Quotients
+ * A divisor for the given digit count. Two-digit divisors come in three
+ * levels, following the usual textbook build-up: 'easy' is a round ten
+ * (the multiplication is a one-digit product plus a 0), 'medium' has a
+ * units digit of 1–4 so it rounds down to a nearby ten and estimating
+ * each quotient digit works well, 'hard' is anything from 11 to 99.
+ */
+function pickDivisor(divisorDigits, difficulty) {
+  if (divisorDigits === 1) return randomInt(2, 9)
+  if (difficulty === 'easy') return randomInt(2, 9) * 10
+  if (difficulty === 'medium') return randomInt(1, 9) * 10 + randomInt(1, 4)
+  return randomInt(11, 99)
+}
+
+/**
+ * A random dividend/divisor pair with the given digit counts (and, for
+ * a two-digit divisor, difficulty — see pickDivisor). Quotients
  * containing a 0 digit are skipped for now — they need a step with no
  * subtraction row, a different shape than every other step. About half
  * the problems divide exactly; the rest leave a remainder.
  */
-export function generateDivisionProblem(dividendDigits, divisorDigits) {
-  const divisorMin = divisorDigits === 1 ? 2 : 10 ** (divisorDigits - 1) + 1
-  const divisorMax = 10 ** divisorDigits - 1
+export function generateDivisionProblem(dividendDigits, divisorDigits, difficulty = 'hard') {
   const dividendMin = 10 ** (dividendDigits - 1)
   const dividendMax = 10 ** dividendDigits - 1
 
   let problem = null
   for (let attempt = 0; attempt < 1000; attempt++) {
-    const divisor = randomInt(divisorMin, divisorMax)
+    const divisor = pickDivisor(divisorDigits, difficulty)
     let dividend
     if (Math.random() < 0.5) {
       const quotientMin = Math.ceil(dividendMin / divisor)
