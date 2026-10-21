@@ -315,8 +315,9 @@ function WrittenDivisionTask() {
           <h2>1. Becslés</h2>
           {estimateRow(true)}
           <p className="written-division-hint">
-            Tipp: vegyél az osztandó elejéről annyi jegyet, hogy megvan benne az osztó — ez adja a hányados első jegyét,
-            és az osztandó minden további jegye még egy-egy jegyet.
+            Tipp: az osztandó elejéről vegyél annyi jegyet, hogy az így kapott szám legalább akkora legyen, mint az
+            osztó. Például 1026 : 44-nél a 10 még kevés, de a 102 már elég. Ebből lesz a hányados első jegye, és az
+            osztandó minden további jegye még egy jegyet ad hozzá — itt a 6, tehát a hányados kétjegyű.
           </p>
           <div className="written-division-actions">
             <button type="button" onClick={goToSolve} disabled={estimateDigits === null}>
