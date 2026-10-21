@@ -2,10 +2,8 @@ import { useMemo, useState } from 'react'
 import {
   buildDivisionLayout,
   fieldText,
-  firstCell,
   generateDivisionProblem,
   isFieldFinished,
-  isLeftToRight,
 } from '../utils/longDivision'
 import { useScore } from '../hooks/useScore'
 import WrittenDivision from '../components/WrittenDivision/WrittenDivision'
@@ -21,10 +19,10 @@ const MIN_DIVISOR_DIGITS = 1
 const MAX_DIVISOR_DIGITS = 2
 const DEFAULT_DIVISOR_DIGITS = 2
 
-// `values` maps a field id to its cells ('' = empty). `cursor` is the
-// cell the next digit goes into; null means the active field was just
-// (re)entered, so the next digit starts it over from its first cell.
-const emptyEntry = () => ({ values: {}, active: 0, cursor: null })
+// `values` maps a field id to its cells ('' = empty); `active` is the
+// field being typed into and `cursor` the cell within it the next digit
+// goes into. The first field is a single quotient cell, so cursor 0.
+const emptyEntry = () => ({ values: {}, active: 0, cursor: 0 })
 
 function parseNumberInput(text) {
   const cleaned = text.replace(/\s/g, '')
@@ -62,7 +60,8 @@ function WrittenDivisionTask() {
   const studentRemainder = textOf(finalRemainderField) ? Number(textOf(finalRemainderField)) : null
   // A field with a gap in it (null) counts as filled — and gets graded wrong.
   const allFieldsFilled = fields.every((f) => textOf(f) !== '')
-  const activeCell = entry.cursor ?? firstCell(fields[entry.active], entry.values, problem.divisor)
+  const unitsCell = (index) => fields[index].cols.length - 1
+  const cellsOf = (values, field) => [...(values[field.id] ?? Array(field.cols.length).fill(''))]
 
   const estimateDigits = parseNumberInput(estimateInput)
 
@@ -85,57 +84,72 @@ function WrittenDivisionTask() {
     startNewRound(dividendDigits, value)
   }
 
-  // A digit lands in the cursor cell and stays there; the cursor then
-  // steps right (product row) or left (remainder row). A field being
-  // (re)entered starts over from its first cell, so fixing one is just
-  // "click it, type the number again".
+  // Any cell can be written — the digit goes into the highlighted cell,
+  // overwriting only that cell. Focus then just suggests the logical next
+  // cell: one to the left (rows are written from the units), unless an
+  // empty cell was left to the right, which comes first; once the row is
+  // complete, the next field's units cell.
   const enterDigit = (digit) => {
     if (isChecked) return
     setEntry((prev) => {
       const field = fields[prev.active]
-      const width = field.cols.length
-      const fresh = prev.cursor === null
-      const cells = fresh ? Array(width).fill('') : [...(prev.values[field.id] ?? Array(width).fill(''))]
-      const cell = fresh ? firstCell(field, prev.values, problem.divisor) : prev.cursor
+      const cells = cellsOf(prev.values, field)
+      const cell = prev.cursor
       cells[cell] = digit
       const values = { ...prev.values, [field.id]: cells }
-      const nextCell = cell + (isLeftToRight(field) ? 1 : -1)
-      const finished = isFieldFinished(field, cells, nextCell, { divisor: problem.divisor, steps: problem.steps, values })
-      if (!finished) return { values, active: prev.active, cursor: nextCell }
-      return { values, active: Math.min(prev.active + 1, fields.length - 1), cursor: null }
+      const emptyToTheRight = cells.lastIndexOf('')
+      if (emptyToTheRight > cell) return { values, active: prev.active, cursor: emptyToTheRight }
+      const finished =
+        cell === 0 || isFieldFinished(field, cells, { divisor: problem.divisor, steps: problem.steps, values })
+      if (!finished) return { values, active: prev.active, cursor: cell - 1 }
+      if (prev.active === fields.length - 1) return { values, active: prev.active, cursor: cell }
+      return { values, active: prev.active + 1, cursor: unitsCell(prev.active + 1) }
     })
   }
 
-  // Erases the most recently typed digit — the rightmost one in a product
-  // row, the leftmost in a remainder row — stepping back into the
-  // previous field once this one is empty.
+  // Clears the highlighted cell; on an empty one, steps back the way
+  // the row was typed (one cell to the right, then into the previous
+  // field) and clears that instead.
   const backspace = () => {
     if (isChecked) return
     setEntry((prev) => {
-      const eraseLastIn = (index) => {
-        const field = fields[index]
-        const cells = [...(prev.values[field.id] ?? Array(field.cols.length).fill(''))]
-        const filled = cells.flatMap((c, i) => (c ? [i] : []))
-        if (filled.length === 0) return null
-        const cell = isLeftToRight(field) ? filled.at(-1) : filled[0]
+      const field = fields[prev.active]
+      const cells = cellsOf(prev.values, field)
+      if (cells[prev.cursor] || prev.cursor < field.cols.length - 1) {
+        const cell = cells[prev.cursor] ? prev.cursor : prev.cursor + 1
         cells[cell] = ''
-        return { values: { ...prev.values, [field.id]: cells }, active: index, cursor: cell }
+        return { ...prev, values: { ...prev.values, [field.id]: cells }, cursor: cell }
       }
-      return (
-        eraseLastIn(prev.active) ??
-        (prev.active > 0 ? (eraseLastIn(prev.active - 1) ?? { ...prev, active: prev.active - 1, cursor: null }) : prev)
-      )
+      if (prev.active === 0) return prev
+      const previous = fields[prev.active - 1]
+      const previousCells = cellsOf(prev.values, previous)
+      const filled = previousCells.flatMap((c, i) => (c ? [i] : []))
+      const cell = filled.length ? filled[0] : previous.cols.length - 1
+      previousCells[cell] = ''
+      return { values: { ...prev.values, [previous.id]: previousCells }, active: prev.active - 1, cursor: cell }
     })
   }
 
   const move = (delta) => {
     setEntry((prev) => {
       const active = Math.min(Math.max(prev.active + delta, 0), fields.length - 1)
-      return { ...prev, active, cursor: null }
+      return { ...prev, active, cursor: unitsCell(active) }
     })
   }
 
-  const select = (index) => setEntry((prev) => ({ ...prev, active: index, cursor: null }))
+  // Arrow keys: one cell at a time, crossing into the neighbouring field
+  // at a field's edge.
+  const moveCell = (delta) => {
+    setEntry((prev) => {
+      const cursor = prev.cursor + delta
+      if (cursor >= 0 && cursor < fields[prev.active].cols.length) return { ...prev, cursor }
+      const active = prev.active + delta
+      if (active < 0 || active >= fields.length) return prev
+      return { ...prev, active, cursor: delta > 0 ? 0 : unitsCell(active) }
+    })
+  }
+
+  const select = (index, cell) => setEntry((prev) => ({ ...prev, active: index, cursor: cell }))
 
   const clearAll = () => {
     if (isChecked) return
@@ -249,22 +263,23 @@ function WrittenDivisionTask() {
           <section className="written-division-step">
             <h2>2. Számolás</h2>
             <p className="written-division-hint">
-              Írd be a hányados jegyeit, a szorzatokat, a maradékokat és a lehozott számjegyeket. A szorzatot balról
-              jobbra, a maradékot jobbról balra, az egyesektől kezdve írd, ahogy papíron is. Enter vagy → a következő
-              mezőre lép.
+              Írd be a hányados jegyeit, a szorzatokat, a maradékokat és a lehozott számjegyeket. A szorzatot és a
+              maradékot jobbról balra, az egyesektől kezdve írd, ahogy papíron is. Bármelyik négyzetbe kattinthatsz; a
+              nyilakkal négyzetenként, Enterrel a következő mezőre léphetsz.
             </p>
             <div className="written-division-work">
               <WrittenDivision
                 layout={layout}
                 values={entry.values}
                 activeIndex={entry.active}
-                activeCell={activeCell}
+                activeCell={entry.cursor}
                 results={isChecked ? result.fieldResults : null}
                 disabled={isChecked}
                 onSelect={select}
                 onDigit={enterDigit}
                 onBackspace={backspace}
                 onMove={move}
+                onMoveCell={moveCell}
               />
               {/* The osztó's 5× and 10× multiples: comparing a partial
                   dividend with them tells whether its quotient digit is

@@ -134,35 +134,19 @@ export function buildDivisionLayout({ dividend, divisor, steps }) {
 
 // --- Entering digits -----------------------------------------------------
 // A field's value is stored cell by cell (an array as wide as the field,
-// '' for an empty cell), so a typed digit never moves. The product row
-// is written left to right, like reading the product off ("1 · 24 =
-// 24"); the remainder row is worked out by completion (pótlás) from the
-// units, so right to left. Single-cell fields don't care.
-
-/** The digits in a field as a number string; '' if empty, null if they have a gap. */
-export function fieldText(cells) {
-  const raw = (cells ?? []).map((c) => c || ' ').join('').trim()
-  return raw.includes(' ') ? null : raw
-}
-
-export function isLeftToRight(field) {
-  return field.kind === 'product'
-}
+// '' for an empty cell), so a typed digit never moves. Every row is
+// typed right to left, from its units cell: the product row because
+// written multiplication starts with the ones, the remainder row because
+// the subtraction (by completion) does too.
 
 /**
- * The cell the first digit of a field goes into. A remainder starts at
- * its units cell. A product starts where it has to begin to end under
- * the partial dividend's last digit — its width follows from the
- * student's OWN quotient digit (q · divisor), so this says nothing about
- * whether that digit is right. Without a quotient digit yet, it starts
- * at the leftmost cell.
+ * The digits in a field as a number string; '' if empty. Null if they
+ * have a gap or don't reach the units cell — a number written one
+ * column too far left is a different number, not the same one.
  */
-export function firstCell(field, values, divisor) {
-  if (!isLeftToRight(field)) return field.cols.length - 1
-  const quotientDigit = fieldText(values[`q${field.step}`])
-  if (!quotientDigit) return 0
-  const width = String(Number(quotientDigit) * divisor).length
-  return Math.max(field.cols.length - width, 0)
+export function fieldText(cells) {
+  const raw = (cells ?? []).map((c) => c || ' ').join('').trimStart()
+  return raw.includes(' ') ? null : raw
 }
 
 /**
@@ -181,22 +165,21 @@ export function studentPartial(step, steps, values) {
 
 /**
  * Whether typing into `field` is clearly finished, so focus can move on
- * by itself: the next cell would fall outside the field, or one more
- * digit would break the arithmetic — a product can't exceed its partial
- * dividend, a remainder can't reach the divisor. Those are the rules
- * themselves, not hints about this problem's answer. (A remainder grows
- * leftward, so the smallest number one more digit could make is
- * 10^len + value; a product grows rightward, so it's value · 10.)
+ * by itself: the field is full, or one more digit would break the
+ * arithmetic — a product can't exceed its partial dividend, a remainder
+ * can't reach the divisor. Those are the rules themselves, not hints
+ * about this problem's answer. Digits are added on the left, so the
+ * smallest number one more digit could make is 10^len + value.
  */
-export function isFieldFinished(field, cells, nextCell, { divisor, steps, values }) {
-  if (nextCell < 0 || nextCell >= field.cols.length) return true
+export function isFieldFinished(field, cells, { divisor, steps, values }) {
   const text = fieldText(cells)
   if (!text) return false
-  const value = Number(text)
-  if (field.kind === 'remainder') return 10 ** text.length + value >= divisor
+  if (text.length >= field.cols.length) return true
+  const smallestLonger = 10 ** text.length + Number(text)
+  if (field.kind === 'remainder') return smallestLonger >= divisor
   if (field.kind === 'product') {
     const partial = studentPartial(field.step, steps, values)
-    return partial !== null && value * 10 > partial
+    return partial !== null && smallestLonger > partial
   }
   return false
 }

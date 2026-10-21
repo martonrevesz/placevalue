@@ -6,15 +6,17 @@ import './WrittenDivision.css'
  * (utils/longDivision.js). Static cells (dividend, divisor, signs) are
  * plain text; the student's inputs are `fields`, each spanning one or
  * more cells. Every digit stays in the cell it was typed into — which
- * cell comes next (product rows left to right, remainder rows right to
- * left) is the task's business, passed in as `activeCell`.
+ * cell comes next (rows are written right to left, from the units) is
+ * the task's business, passed in as `activeCell`.
  *
  * Controlled: `values` is `{ [fieldId]: cells[] }` ('' = empty cell),
  * `activeIndex` the field (index into `layout.fields`) being typed into,
  * `activeCell` the cell within it the next digit lands in — highlighted,
- * and holding focus. Keys pressed there are reported as `onDigit`,
- * `onBackspace`, `onMove(±1)`; clicking any cell of a field calls
- * `onSelect(index)`. Only that one cell is in the Tab order.
+ * and holding focus. Any cell can be written: clicking one calls
+ * `onSelect(fieldIndex, cellIndex)`. Keys pressed are reported as
+ * `onDigit`, `onBackspace`, `onMoveCell(±1)` (arrow keys, one cell) and
+ * `onMove(±1)` (Enter / Tab, one field). Only that one cell is in the
+ * Tab order.
  *
  * `results` (`{ [fieldId]: boolean }`, after grading) tints each field
  * green or red. A dividend digit gets its tick once it has been brought
@@ -32,6 +34,7 @@ function WrittenDivision({
   onDigit,
   onBackspace,
   onMove,
+  onMoveCell,
 }) {
   const activeCellRef = useRef(null)
 
@@ -52,12 +55,15 @@ function WrittenDivision({
     } else if (e.key === 'Backspace' || e.key === 'Delete') {
       e.preventDefault()
       onBackspace()
-    } else if (e.key === 'Enter' || e.key === 'ArrowRight' || (e.key === 'Tab' && !e.shiftKey)) {
+    } else if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+      e.preventDefault()
+      onMoveCell(e.key === 'ArrowRight' ? 1 : -1)
+    } else if (e.key === 'Enter' || (e.key === 'Tab' && !e.shiftKey)) {
       if (e.key === 'Tab' && activeIndex === layout.fields.length - 1) return
       e.preventDefault()
       onMove(1)
-    } else if (e.key === 'ArrowLeft' || (e.key === 'Tab' && e.shiftKey)) {
-      if (e.key === 'Tab' && activeIndex === 0) return
+    } else if (e.key === 'Tab' && e.shiftKey) {
+      if (activeIndex === 0) return
       e.preventDefault()
       onMove(-1)
     }
@@ -108,7 +114,7 @@ function WrittenDivision({
                 style={{ gridRow: field.row + 1, gridColumn: col + 1 }}
                 tabIndex={isTarget ? 0 : -1}
                 disabled={disabled}
-                onClick={() => onSelect(index)}
+                onClick={() => onSelect(index, i)}
                 aria-label={`${FIELD_LABELS[field.kind]}${digit ? `, ${digit}` : ', üres'}`}
               >
                 {digit}
