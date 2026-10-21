@@ -18,7 +18,9 @@ import './WrittenDivision.css'
  * `onMove(±1)` (Enter / Tab, one field). Only that one cell is in the
  * Tab order. `revealed` limits drawing to the first that-many fields, so
  * rows can appear one at a time; the paper itself keeps its full size,
- * so nothing shifts as they do.
+ * so nothing shifts as they do. `carries` (`{ [fieldId]: boolean[] }`)
+ * marks cells that get the small carried 1 of a subtraction by
+ * completion in their top right corner.
  *
  * `results` (`{ [fieldId]: boolean }`, after grading) tints each field
  * green or red. A dividend digit gets its tick once it has been brought
@@ -31,6 +33,7 @@ function WrittenDivision({
   activeIndex,
   activeCell,
   revealed = Infinity,
+  carries = {},
   results = null,
   disabled = false,
   onSelect,
@@ -131,6 +134,11 @@ function WrittenDivision({
                 aria-label={`${FIELD_LABELS[field.kind]}${digit ? `, ${digit}` : ', üres'}`}
               >
                 {digit}
+                {carries[field.id]?.[i] && (
+                  <span className="wd-carry" aria-hidden="true">
+                    1
+                  </span>
+                )}
               </button>
             )
           })

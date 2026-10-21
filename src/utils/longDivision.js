@@ -163,6 +163,26 @@ export function studentPartial(step, steps, values) {
   return Number(remainder + lehozott)
 }
 
+/**
+ * The carries of a subtraction done by completion (pótlás), right to
+ * left: `carries[j]` is true when a 1 is carried INTO column j — the
+ * small 1 written at the top right of the product's digit there. Both
+ * numbers are right-aligned in `width` columns. Null if they don't fit
+ * or the product is larger (nothing sensible to show then).
+ */
+export function subtractionCarries(partial, product, width) {
+  const top = String(partial).padStart(width, '0')
+  const bottom = String(product).padStart(width, '0')
+  if (top.length > width || bottom.length > width || product > partial) return null
+  const carries = Array(width).fill(false)
+  let carry = 0
+  for (let j = width - 1; j >= 0; j--) {
+    carry = Number(bottom[j]) + carry > Number(top[j]) ? 1 : 0
+    if (j > 0) carries[j - 1] = carry === 1
+  }
+  return carries
+}
+
 // "…-ban/-ben" forms of the place names, by place (0 = egyes).
 const PLACE_NAMES_IN = ['egyesben', 'tízesben', 'százasban', 'ezresben', 'tízezresben']
 

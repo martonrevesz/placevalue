@@ -6,6 +6,8 @@ import {
   generateDivisionProblem,
   isFieldFinished,
   reachedFieldCount,
+  studentPartial,
+  subtractionCarries,
 } from '../utils/longDivision'
 import { useScore } from '../hooks/useScore'
 import WrittenDivision from '../components/WrittenDivision/WrittenDivision'
@@ -74,6 +76,24 @@ function WrittenDivisionTask() {
   const allFieldsFilled = fields.every((f) => textOf(f) !== '')
   const unitsCell = (index) => fields[index].cols.length - 1
   const cellsOf = (values, field) => [...(values[field.id] ?? Array(field.cols.length).fill(''))]
+
+  // The carried 1 of the subtraction by completion, from the student's
+  // own partial dividend and product: shown on the product digit of the
+  // column the student is about to work on — the difference cell to its
+  // right is filled, its own isn't yet — and only while that difference
+  // row is being filled, so it disappears once used or left behind.
+  const carryMarks = {}
+  const activeField = fields[entry.active]
+  if (!isChecked && activeField.kind === 'remainder') {
+    const partial = studentPartial(activeField.step, problem.steps, entry.values)
+    const product = fieldText(entry.values[`p${activeField.step}`])
+    const carries =
+      partial !== null && product ? subtractionCarries(partial, Number(product), activeField.cols.length) : null
+    if (carries) {
+      const difference = cellsOf(entry.values, activeField)
+      carryMarks[`p${activeField.step}`] = carries.map((carry, j) => carry && Boolean(difference[j + 1]) && !difference[j])
+    }
+  }
 
   const estimateDigits = parseNumberInput(estimateInput)
 
@@ -297,6 +317,7 @@ function WrittenDivisionTask() {
                 activeIndex={entry.active}
                 activeCell={entry.cursor}
                 revealed={isChecked ? fields.length : entry.revealed}
+                carries={carryMarks}
                 results={isChecked ? result.fieldResults : null}
                 disabled={isChecked}
                 onSelect={select}

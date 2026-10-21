@@ -45,6 +45,7 @@
 }
 
 .wd-cell {
+  position: relative;
   margin: 2px;
   display: flex;
   align-items: center;
@@ -101,6 +102,18 @@
   border-color: var(--color-error);
   background: var(--color-error-bg);
   color: var(--color-error);
+}
+
+/* The small carried 1 of a subtraction by completion (pótlás), in the
+   top right corner of the product digit it adds to. */
+.wd-carry {
+  position: absolute;
+  top: 1px;
+  right: 2px;
+  font-size: 0.45em;
+  line-height: 1;
+  color: var(--color-ink-muted);
+  pointer-events: none;
 }
 
 /* The rule under each subtraction (minus sign + product). */
