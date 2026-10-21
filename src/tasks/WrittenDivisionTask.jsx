@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import {
   buildDivisionLayout,
+  fieldQuestion,
   fieldText,
   generateDivisionProblem,
   isFieldFinished,
@@ -11,6 +12,7 @@ import WrittenDivision from '../components/WrittenDivision/WrittenDivision'
 import DigitPad from '../components/DigitPad/DigitPad'
 import ScoreDisplay from '../components/ScoreDisplay/ScoreDisplay'
 import FeedbackPill from '../components/FeedbackPill/FeedbackPill'
+import HintIcon from '../components/HintIcon/HintIcon'
 import './WrittenDivisionTask.css'
 
 const MIN_DIVIDEND_DIGITS = 3
@@ -314,6 +316,20 @@ function WrittenDivisionTask() {
                 <p>
                   10 · {problem.divisor} = {10 * problem.divisor}
                 </p>
+                {/* What the cell being filled answers, on hover — kept
+                    here rather than in the grid so the grid stays clean. */}
+                {!isChecked && (
+                  <p className="written-division-tipbox-question">
+                    Mit számolok most?{' '}
+                    <HintIcon
+                      hint={fieldQuestion(fields[entry.active], {
+                        divisor: problem.divisor,
+                        steps: problem.steps,
+                        values: entry.values,
+                      })}
+                    />
+                  </p>
+                )}
               </aside>
             </div>
             <DigitPad onDigit={enterDigit} onClear={backspace} onClearAll={clearAll} disabled={isChecked} />

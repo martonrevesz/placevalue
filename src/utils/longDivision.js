@@ -164,6 +164,35 @@ export function studentPartial(step, steps, values) {
 }
 
 /**
+ * What question the given field answers, worded with the student's OWN
+ * numbers so far (their partial dividend, their quotient digit, their
+ * product) — so it explains the step without giving away its answer.
+ */
+export function fieldQuestion(field, { divisor, steps, values }) {
+  const textOf = (id) => {
+    const text = fieldText(values[id])
+    return text ? String(Number(text)) : null
+  }
+  const partial = studentPartial(field.step, steps, values)
+  if (field.kind === 'quotient') {
+    if (partial === null) return 'Előbb fejezd be az előző sort!'
+    return `${partial} : ${divisor} = ? (Hányszor van meg benne az osztó?)`
+  }
+  if (field.kind === 'product') {
+    const digit = textOf(`q${field.step}`)
+    if (!digit) return 'Előbb írd be a hányados jegyét!'
+    return `${digit} · ${divisor} = ? (A hányados jegyét szorozd meg az osztóval.)`
+  }
+  if (field.kind === 'remainder') {
+    const product = textOf(`p${field.step}`)
+    if (partial === null) return 'Előbb fejezd be az előző sort!'
+    if (!product) return 'Előbb írd be a szorzatot!'
+    return `${partial} − ${product} = ? (Vond ki a szorzatot a fölötte lévő számból.)`
+  }
+  return 'Hozd le az osztandó következő jegyét!'
+}
+
+/**
  * How many fields (a prefix, in writing order) the student has reached:
  * the first one always, then each next one once the field before it
  * has any digit — so rows appear one at a time as the work proceeds
