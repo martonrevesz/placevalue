@@ -151,7 +151,7 @@ function WrittenDivision({
 const FIELD_LABELS = {
   quotient: 'hányados számjegye',
   product: 'szorzat',
-  remainder: 'maradék',
+  remainder: 'különbség',
   lehozott: 'lehozott számjegy',
 }
 

@@ -286,8 +286,8 @@ function WrittenDivisionTask() {
           <section className="written-division-step">
             <h2>2. Számolás</h2>
             <p className="written-division-hint">
-              Írd be a hányados jegyeit, a szorzatokat, a maradékokat és a lehozott számjegyeket. A szorzatot és a
-              maradékot jobbról balra, az egyesektől kezdve írd, ahogy papíron is. Bármelyik négyzetbe kattinthatsz; a
+              Írd be a hányados jegyeit, a szorzatokat, a különbségeket és a lehozott számjegyeket. A szorzatot és a
+              különbséget jobbról balra, az egyesektől kezdve írd, ahogy papíron is. Bármelyik négyzetbe kattinthatsz; a
               nyilakkal négyzetenként, Enterrel a következő mezőre léphetsz.
             </p>
             <div className="written-division-work">
