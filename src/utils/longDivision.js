@@ -163,6 +163,9 @@ export function studentPartial(step, steps, values) {
   return Number(remainder + lehozott)
 }
 
+// "…-ban/-ben" forms of the place names, by place (0 = egyes).
+const PLACE_NAMES_IN = ['egyesben', 'tízesben', 'százasban', 'ezresben', 'tízezresben']
+
 /**
  * What question the given field answers, worded with the student's OWN
  * numbers so far (their partial dividend, their quotient digit, their
@@ -176,7 +179,11 @@ export function fieldQuestion(field, { divisor, steps, values }) {
   const partial = studentPartial(field.step, steps, values)
   if (field.kind === 'quotient') {
     if (partial === null) return 'Előbb fejezd be az előző sort!'
-    return `${partial} : ${divisor} = ? (Hányszor van meg benne az osztó?)`
+    // The partial dividend counts units of the place its last digit sits
+    // in — 77 százas, 338 tízes — which is why this quotient digit has
+    // that same place value.
+    const place = steps.at(-1).endCol - steps[field.step].endCol
+    return `Hányszor van meg ${partial} ${PLACE_NAMES_IN[place]} az osztó? (${partial} : ${divisor})`
   }
   if (field.kind === 'product') {
     const digit = textOf(`q${field.step}`)
